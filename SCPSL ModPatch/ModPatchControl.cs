@@ -241,23 +241,11 @@ namespace SCPSL_ModPatch
             /*MessageBox.Show($"firstExceptionOffset: {firstExceptionOffset}\r\nthirdExceptionOffset {thirdExceptionOffset}\r\n" +
                 $"validationProgressOffset: {validationProgressOffset}\r\nauthFunctionOffset: {authFunctionOffset}");*/
 
-            try
-            {
-                SaveGameAssembly(gameAssemblyPath, gameAssemblyData);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-                return;
-            }
+            SaveGameAssembly(gameAssemblyPath, gameAssemblyData);
         }
 
         private void SaveGameAssembly(string gameAssemblyPath, List<byte> gameAssemblyData)
         {
-            if (!Directory.Exists(gameAssemblyPath))
-            {
-                throw new DirectoryNotFoundException("Couldn't save GameAssembly.dll because game path is not exists.");
-            }
             File.WriteAllBytes(gameAssemblyPath, gameAssemblyData.ToArray());
         }
 
@@ -324,15 +312,7 @@ namespace SCPSL_ModPatch
             GameAssembly = ChangeGameVersion(scriptJson, GameAssembly, changeVersionForm.version);
             ChangeVersionTextBoxLines(1, changeVersionForm.version.ToString());
 
-            try
-            {
-                SaveGameAssembly(gameAssemblyPath, GameAssembly);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-                return;
-            }
+            SaveGameAssembly(gameAssemblyPath, GameAssembly);
         }
     }
 }
