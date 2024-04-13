@@ -175,7 +175,7 @@
             versionTextBox.ReadOnly = true;
             versionTextBox.Size = new Size(595, 62);
             versionTextBox.TabIndex = 1;
-            versionTextBox.Text = "Game version:\r\nNA";
+            versionTextBox.Text = "Game version:\r\nN/A";
             versionTextBox.TextAlign = HorizontalAlignment.Center;
             // 
             // ModPatchControl
