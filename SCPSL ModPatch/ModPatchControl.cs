@@ -148,10 +148,16 @@ namespace SCPSL_ModPatch
                 return;
             }
 
-            ulong rva = 13353760;
-            MessageBox.Show($"RVA: {rva} Offset: {il2Cpp.MapRTVA(rva)} Test: {il2Cpp.MapVATR(rva)}");
+            ulong rva = 12811120;
+            MessageBox.Show($"{GetRVAOffset(il2Cpp, rva)}");
+            MessageBox.Show($"RVA: {rva} Offset: {il2Cpp.MapRTVA(rva) - il2Cpp.ImageBase}");
 
             Il2CppDumperWorker.Dump(metadata, il2Cpp, DUMP_FOLDER);
+        }
+
+        private ulong GetRVAOffset(Il2Cpp il2Cpp, ulong addr)
+        {
+            return il2Cpp.GetRVA(il2Cpp.MapRTVA(addr)) - addr;
         }
 
         private void patchButton_Click(object sender, EventArgs e)
