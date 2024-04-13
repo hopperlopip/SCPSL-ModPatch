@@ -192,16 +192,16 @@ namespace SCPSL_ModPatch
         private void PatchGameAssembly_v13(ScriptJson scriptJson, List<byte> gameAssemblyData, string gameAssemblyPath)
         {
             int firstExceptionOffset = GetOffsetFromFuncName("LauncherCommunicator$$GetNativeDelegate<object>", scriptJson);
-            //gameAssemblyData = PatchFunction(gameAssemblyData, firstExceptionOffset, 140, NOP, 3);
+            gameAssemblyData = PatchFunction(gameAssemblyData, firstExceptionOffset, 140, NOP, 3);
 
             int thirdExceptionOffset = GetOffsetFromFuncName("SimpleMenu.<StartLoad>d__10$$MoveNext", scriptJson);
-            //gameAssemblyData = PatchFunction(gameAssemblyData, thirdExceptionOffset, 243, NOP, 3);
+            gameAssemblyData = PatchFunction(gameAssemblyData, thirdExceptionOffset, 243, NOP, 3);
 
             int validationProgressOffset = GetOffsetFromFuncName("LauncherAssetScanProgressBar$$Update", scriptJson);
-            //gameAssemblyData = PatchFunction(gameAssemblyData, validationProgressOffset, 0, RET, 2);
+            gameAssemblyData = PatchFunction(gameAssemblyData, validationProgressOffset, 0, RET, 2);
 
             int authFunctionOffset = GetOffsetFromFuncName("LauncherCommunicator$$Send", scriptJson);
-            //gameAssemblyData = PatchFunction(gameAssemblyData, authFunctionOffset, 120, NOP, 4);
+            gameAssemblyData = PatchFunction(gameAssemblyData, authFunctionOffset, 120, NOP, 4);
 
             //test
             MessageBox.Show($"firstExceptionOffset: {firstExceptionOffset}\r\nthirdExceptionOffset {thirdExceptionOffset}\r\n" +
