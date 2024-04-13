@@ -19,12 +19,14 @@ namespace SCPSL_ModPatch
         const byte NOP = 144;
         const byte RET = 195;
         const string CONFIG_FILENAME = @".\config.json";
-        const string DUMP_FOLDER = @".\";
+        const string IL2CPP_FOLDER = @".\il2cppdumper";
 
         ConfigurationClass config;
         List<byte> GameAssembly;
-        string il2cpp_output_folder = @$"{Environment.CurrentDirectory}\IL2CPP_Output";
         VersionType versionType = VersionType.v13;
+
+        Il2Cpp? il2Cpp = null;
+        Metadata? metadata = null;
 
         public ModPatchControl()
         {
@@ -71,14 +73,9 @@ namespace SCPSL_ModPatch
             settingsForm.ShowDialog();
         }
 
-        private List<byte> GetGameAssemblyData(string gamePath)
+        private List<byte> GetGameAssemblyData(string gameAssemblyPath)
         {
-            if (string.IsNullOrEmpty(gamePath))
-            {
-                throw new GameFolderNotFoundException("Your game path is empty. Please go to the settings and type your game path");
-            }
             List<byte> gameAssemblyData;
-            string gameAssemblyPath = @$"{gamePath}\GameAssembly.dll";
             if (!File.Exists(gameAssemblyPath))
             {
                 throw new GameAssemblyNotFoundException("Couldn't find GameAssembly.dll. Please type correct path to your game." +
@@ -101,27 +98,24 @@ namespace SCPSL_ModPatch
         private void il2cppButton_Click(object sender, EventArgs e)
         {
             config = SettingsForm.GetConfiguration(CONFIG_FILENAME);
-            string gameFolder = config.GameFolder_Path;
+            string gamePath = config.GameFolder_Path;
+            string gameAssemblyPath = @$"{gamePath}\GameAssembly.dll";
+            string metadataPath = @$"{gamePath}\SCPSL_Data\il2cpp_data\Metadata\global-metadata.dat";
 
             switch (versionType)
             {
                 case VersionType.v11:
-                    FixMetadataVersion(24, gameFolder);
+                    FixMetadataVersion(24, gamePath);
                     break;
 
                 case VersionType.v12:
-                    FixMetadataVersion(24, gameFolder);
+                    FixMetadataVersion(24, gamePath);
                     break;
 
                 case VersionType.v13:
-                    FixMetadataVersion(29, gameFolder);
+                    FixMetadataVersion(29, gamePath);
                     break;
             }
-
-            config = SettingsForm.GetConfiguration(CONFIG_FILENAME);
-            string gamePath = config.GameFolder_Path;
-            string gameAssemblyPath = @$"{gamePath}\GameAssembly.dll";
-            string metadataPath = @$"{gamePath}\SCPSL_Data\il2cpp_data\Metadata\global-metadata.dat";
 
             if (!File.Exists(gameAssemblyPath))
             {
@@ -133,8 +127,7 @@ namespace SCPSL_ModPatch
                 MessageBox.Show($"File {Path.GetFileName(metadataPath)} not found");
                 return;
             }
-            Metadata? metadata;
-            Il2Cpp? il2Cpp;
+
             try
             {
                 if (!Il2CppDumperWorker.Init(gameAssemblyPath, metadataPath, out metadata, out il2Cpp))
@@ -148,11 +141,8 @@ namespace SCPSL_ModPatch
                 return;
             }
 
-            ulong rva = 12811120;
-            MessageBox.Show($"{GetRVAOffset(il2Cpp, rva)}");
-            MessageBox.Show($"RVA: {rva} Offset: {il2Cpp.MapRTVA(rva) - il2Cpp.ImageBase}");
-
-            Il2CppDumperWorker.Dump(metadata, il2Cpp, DUMP_FOLDER);
+            Directory.CreateDirectory(IL2CPP_FOLDER);
+            Il2CppDumperWorker.Dump(metadata, il2Cpp, @$"{IL2CPP_FOLDER}\");
         }
 
         private ulong GetRVAOffset(Il2Cpp il2Cpp, ulong addr)
@@ -165,33 +155,53 @@ namespace SCPSL_ModPatch
             config = SettingsForm.GetConfiguration(CONFIG_FILENAME);
             string gamePath = config.GameFolder_Path;
             string gameAssemblyPath = @$"{gamePath}\GameAssembly.dll";
-            string dumpPath = $@"{DUMP_FOLDER}\dump.cs";
+            string scriptPath = @$"{IL2CPP_FOLDER}\script.json";
+            ScriptJson scriptJson;
 
-            if (!File.Exists(dumpPath))
+            if (il2Cpp == null)
             {
-                MessageBox.Show("The dump file is not found. Please start IL2CPP Dumper first.");
+                MessageBox.Show("IL2CPP is not loaded. Please load IL2CPP by IL2CPP Dumper.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            PatchGameAssembly_v13(dumpPath, GameAssembly, gameAssemblyPath);
+            GameAssembly = GetGameAssemblyData(gameAssemblyPath);
+
+            try
+            {
+                scriptJson = GetScriptJSON(scriptPath);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return;
+            }
+
+            PatchGameAssembly_v13(scriptJson, GameAssembly, gameAssemblyPath);
         }
 
-        private void PatchGameAssembly_v13(string dumpPath, List<byte> gameAssemblyData, string gameAssemblyPath)
+        private ScriptJson GetScriptJSON(string scriptPath)
         {
-            var dump = File.ReadAllText(dumpPath);
+            ScriptJson? scriptJson = JsonConvert.DeserializeObject<ScriptJson>(File.ReadAllText(scriptPath));
+            if (scriptJson == null)
+            {
+                throw new Exception("Couldn't deserialize JSON file.");
+            }
+            return scriptJson;
+        }
 
-            MessageBox.Show("ss");
-            int firstExceptionOffset = GetOffsetFromFuncName("LauncherCommunicator", "GetNativeDelegate<object>", dump);
-            gameAssemblyData = PatchFunction(gameAssemblyData, firstExceptionOffset, 140, NOP, 3);
+        private void PatchGameAssembly_v13(ScriptJson scriptJson, List<byte> gameAssemblyData, string gameAssemblyPath)
+        {
+            int firstExceptionOffset = GetOffsetFromFuncName("LauncherCommunicator$$GetNativeDelegate<object>", scriptJson);
+            //gameAssemblyData = PatchFunction(gameAssemblyData, firstExceptionOffset, 140, NOP, 3);
 
-            int thirdExceptionOffset = GetOffsetFromFuncName("SimpleMenu.<StartLoad>d__10", "MoveNext", dump);
-            gameAssemblyData = PatchFunction(gameAssemblyData, thirdExceptionOffset, 243, NOP, 3);
+            int thirdExceptionOffset = GetOffsetFromFuncName("SimpleMenu.<StartLoad>d__10$$MoveNext", scriptJson);
+            //gameAssemblyData = PatchFunction(gameAssemblyData, thirdExceptionOffset, 243, NOP, 3);
 
-            int validationProgressOffset = GetOffsetFromFuncName("LauncherAssetScanProgressBar", "Update", dump);
-            gameAssemblyData = PatchFunction(gameAssemblyData, validationProgressOffset, 0, RET, 2);
+            int validationProgressOffset = GetOffsetFromFuncName("LauncherAssetScanProgressBar$$Update", scriptJson);
+            //gameAssemblyData = PatchFunction(gameAssemblyData, validationProgressOffset, 0, RET, 2);
 
-            int authFunctionOffset = GetOffsetFromFuncName("LauncherCommunicator", "Send", dump);
-            gameAssemblyData = PatchFunction(gameAssemblyData, authFunctionOffset, 120, NOP, 4);
+            int authFunctionOffset = GetOffsetFromFuncName("LauncherCommunicator$$Send", scriptJson);
+            //gameAssemblyData = PatchFunction(gameAssemblyData, authFunctionOffset, 120, NOP, 4);
 
             //test
             MessageBox.Show($"firstExceptionOffset: {firstExceptionOffset}\r\nthirdExceptionOffset {thirdExceptionOffset}\r\n" +
@@ -216,34 +226,23 @@ namespace SCPSL_ModPatch
             return gameAssemblyData;
         }
 
-        /*private GameVersion GetGameVersion(IL2CPP_Dumper_Output output, List<byte> data)
+        private GameVersion GetGameVersion(ScriptJson scriptJson, List<byte> data)
         {
-            int gameVersionOffset = GetOffsetFromFuncName("GameCore.Version$$.cctor", output);
+            int gameVersionOffset = GetOffsetFromFuncName("GameCore.Version$$.cctor", scriptJson);
             GameVersion gameVersion = new GameVersion(data[gameVersionOffset + 125], data[gameVersionOffset + 143], data[gameVersionOffset + 161]);
             return gameVersion;
-        }*/
+        }
 
-        private int GetOffsetFromFuncName(string className, string methodName, string dump)
+        private int GetOffsetFromFuncName(string functionName, ScriptJson scriptJson)
         {
-            MessageBox.Show("ss");
-            Regex regex = new Regex(className + @"[\S\s]*RVA: 0x([\dA-F]+) Offset: 0x([\dA-F]+) VA: 0x([\dA-F]+)[\S\s]*" + methodName);
-            Match match = regex.Match(dump);
-            if (match.Success)
+            for (int i = 0; i < scriptJson.ScriptMethod.Count; i++)
             {
-                int offset;
-                try
+                if (scriptJson.ScriptMethod[i].Name == functionName)
                 {
-                    offset = Convert.ToInt32(match.Groups[2].Value, 16);
+                    ulong address = scriptJson.ScriptMethod[i].Address;
+                    ulong offset = address - GetRVAOffset(il2Cpp, address);
+                    return Convert.ToInt32(offset);
                 }
-                catch
-                {
-                    return -1;
-                }
-
-                //test
-                MessageBox.Show($"Class: {className}\r\nMethod: {methodName}\r\nOffset: {offset}");
-
-                return offset;
             }
             return -1;
         }

@@ -147,8 +147,9 @@ namespace SCPSL_ModPatch
         {
             Console.WriteLine("Dumping...");
             var executor = new Il2CppExecutor(metadata, il2Cpp);
-            var decompiler = new Il2CppDecompiler(executor);
-            decompiler.Decompile(new Config(), outputDir);
+            Console.WriteLine("Generate struct...");
+            var scriptGenerator = new StructGenerator(executor);
+            scriptGenerator.WriteScript(outputDir);
             Console.WriteLine("Done!");
         }
     }
