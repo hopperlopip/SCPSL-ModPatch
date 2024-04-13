@@ -20,6 +20,7 @@ namespace SCPSL_ModPatch
         const byte RET = 195;
         const string CONFIG_FILENAME = @".\config.json";
         const string IL2CPP_FOLDER = @".\il2cppdumper";
+        const string IL2CPP_IS_NULL_MESSAGE = "IL2CPP is not loaded. Please load IL2CPP first.";
 
         ConfigurationClass config;
         List<byte> GameAssembly;
@@ -27,6 +28,7 @@ namespace SCPSL_ModPatch
 
         Il2Cpp? il2Cpp = null;
         Metadata? metadata = null;
+        ScriptJson scriptJson;
 
         public ModPatchControl()
         {
@@ -101,6 +103,16 @@ namespace SCPSL_ModPatch
             string gamePath = config.GameFolder_Path;
             string gameAssemblyPath = @$"{gamePath}\GameAssembly.dll";
             string metadataPath = @$"{gamePath}\SCPSL_Data\il2cpp_data\Metadata\global-metadata.dat";
+            string scriptPath = @$"{IL2CPP_FOLDER}\script.json";
+
+            il2Cpp = null;
+            metadata = null;
+
+            if (string.IsNullOrEmpty(gamePath))
+            {
+                MessageBox.Show("Game path is empty. Please type valid game path in the settings.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
             switch (versionType)
             {
@@ -141,8 +153,36 @@ namespace SCPSL_ModPatch
                 return;
             }
 
+            GameAssembly = GetGameAssemblyData(gameAssemblyPath);
+
             Directory.CreateDirectory(IL2CPP_FOLDER);
             Il2CppDumperWorker.Dump(metadata, il2Cpp, @$"{IL2CPP_FOLDER}\");
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
+            try
+            {
+                scriptJson = GetScriptJSON(scriptPath);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                return;
+            }
+
+            if (Directory.Exists(IL2CPP_FOLDER))
+            {
+                Directory.Delete(IL2CPP_FOLDER, true);
+            }
+
+            ChangeVersionTextBoxLines(1, GetGameVersion(scriptJson, GameAssembly).ToString());
+        }
+
+        private void ChangeVersionTextBoxLines(int i, string value)
+        {
+            var textLines = versionTextBox.Lines;
+            textLines[i] = value;
+            versionTextBox.Lines = textLines;
         }
 
         private ulong GetRVAOffset(Il2Cpp il2Cpp, ulong addr)
@@ -155,28 +195,23 @@ namespace SCPSL_ModPatch
             config = SettingsForm.GetConfiguration(CONFIG_FILENAME);
             string gamePath = config.GameFolder_Path;
             string gameAssemblyPath = @$"{gamePath}\GameAssembly.dll";
-            string scriptPath = @$"{IL2CPP_FOLDER}\script.json";
-            ScriptJson scriptJson;
 
             if (il2Cpp == null)
             {
-                MessageBox.Show("IL2CPP is not loaded. Please load IL2CPP by IL2CPP Dumper.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(IL2CPP_IS_NULL_MESSAGE, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            GameAssembly = GetGameAssemblyData(gameAssemblyPath);
-
-            try
+            if (string.IsNullOrEmpty(gamePath))
             {
-                scriptJson = GetScriptJSON(scriptPath);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show("Game path is empty. Please type valid game path in the settings.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
             PatchGameAssembly_v13(scriptJson, GameAssembly, gameAssemblyPath);
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
         }
 
         private ScriptJson GetScriptJSON(string scriptPath)
@@ -203,9 +238,8 @@ namespace SCPSL_ModPatch
             int authFunctionOffset = GetOffsetFromFuncName("LauncherCommunicator$$Send", scriptJson);
             gameAssemblyData = PatchFunction(gameAssemblyData, authFunctionOffset, 120, NOP, 4);
 
-            //test
-            MessageBox.Show($"firstExceptionOffset: {firstExceptionOffset}\r\nthirdExceptionOffset {thirdExceptionOffset}\r\n" +
-                $"validationProgressOffset: {validationProgressOffset}\r\nauthFunctionOffset: {authFunctionOffset}");
+            /*MessageBox.Show($"firstExceptionOffset: {firstExceptionOffset}\r\nthirdExceptionOffset {thirdExceptionOffset}\r\n" +
+                $"validationProgressOffset: {validationProgressOffset}\r\nauthFunctionOffset: {authFunctionOffset}");*/
 
             File.WriteAllBytes(gameAssemblyPath, gameAssemblyData.ToArray());
         }
@@ -233,6 +267,15 @@ namespace SCPSL_ModPatch
             return gameVersion;
         }
 
+        private List<byte> ChangeGameVersion(ScriptJson scriptJson, List<byte> data, GameVersion version)
+        {
+            int gameVersionOffset = GetOffsetFromFuncName("GameCore.Version$$.cctor", scriptJson);
+            data[gameVersionOffset + 125] = version.major;
+            data[gameVersionOffset + 143] = version.minor;
+            data[gameVersionOffset + 161] = version.patch;
+            return data;
+        }
+
         private int GetOffsetFromFuncName(string functionName, ScriptJson scriptJson)
         {
             for (int i = 0; i < scriptJson.ScriptMethod.Count; i++)
@@ -245,6 +288,20 @@ namespace SCPSL_ModPatch
                 }
             }
             return -1;
+        }
+
+        private void changeVersionButton_Click(object sender, EventArgs e)
+        {
+            if (il2Cpp == null)
+            {
+                MessageBox.Show(IL2CPP_IS_NULL_MESSAGE, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            ChangeVersionForm changeVersionForm = new ChangeVersionForm(new GameVersion(versionTextBox.Lines[1]));
+            changeVersionForm.ShowDialog();
+            GameAssembly = ChangeGameVersion(scriptJson, GameAssembly, changeVersionForm.version);
+            ChangeVersionTextBoxLines(1, changeVersionForm.version.ToString());
         }
     }
 }

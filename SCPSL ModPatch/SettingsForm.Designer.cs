@@ -29,45 +29,23 @@
         private void InitializeComponent()
         {
             ApplyButton = new Button();
-            IL2CPPDumperGroupBox = new GroupBox();
-            il2cppPathTextBox = new TextBox();
             openIL2CPPDumperDialog = new OpenFileDialog();
             GamePathGroupBox = new GroupBox();
             gamePathTextBox = new TextBox();
             resetButton = new Button();
-            IL2CPPDumperGroupBox.SuspendLayout();
             GamePathGroupBox.SuspendLayout();
             SuspendLayout();
             // 
             // ApplyButton
             // 
             ApplyButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            ApplyButton.Location = new Point(12, 141);
+            ApplyButton.Location = new Point(12, 77);
             ApplyButton.Name = "ApplyButton";
             ApplyButton.Size = new Size(485, 43);
             ApplyButton.TabIndex = 0;
             ApplyButton.Text = "Apply settings";
             ApplyButton.UseVisualStyleBackColor = true;
             ApplyButton.Click += ApplyButton_Click;
-            // 
-            // IL2CPPDumperGroupBox
-            // 
-            IL2CPPDumperGroupBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            IL2CPPDumperGroupBox.Controls.Add(il2cppPathTextBox);
-            IL2CPPDumperGroupBox.Location = new Point(12, 12);
-            IL2CPPDumperGroupBox.Name = "IL2CPPDumperGroupBox";
-            IL2CPPDumperGroupBox.Size = new Size(485, 57);
-            IL2CPPDumperGroupBox.TabIndex = 1;
-            IL2CPPDumperGroupBox.TabStop = false;
-            IL2CPPDumperGroupBox.Text = "IL2CPP Dumper Path";
-            // 
-            // il2cppPathTextBox
-            // 
-            il2cppPathTextBox.Dock = DockStyle.Fill;
-            il2cppPathTextBox.Location = new Point(3, 23);
-            il2cppPathTextBox.Name = "il2cppPathTextBox";
-            il2cppPathTextBox.Size = new Size(479, 27);
-            il2cppPathTextBox.TabIndex = 2;
             // 
             // openIL2CPPDumperDialog
             // 
@@ -77,7 +55,7 @@
             // 
             GamePathGroupBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             GamePathGroupBox.Controls.Add(gamePathTextBox);
-            GamePathGroupBox.Location = new Point(12, 75);
+            GamePathGroupBox.Location = new Point(12, 12);
             GamePathGroupBox.Name = "GamePathGroupBox";
             GamePathGroupBox.Size = new Size(485, 57);
             GamePathGroupBox.TabIndex = 2;
@@ -95,7 +73,7 @@
             // resetButton
             // 
             resetButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            resetButton.Location = new Point(12, 190);
+            resetButton.Location = new Point(12, 126);
             resetButton.Name = "resetButton";
             resetButton.Size = new Size(485, 43);
             resetButton.TabIndex = 3;
@@ -107,18 +85,15 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(509, 245);
+            ClientSize = new Size(509, 181);
             Controls.Add(resetButton);
             Controls.Add(ApplyButton);
             Controls.Add(GamePathGroupBox);
-            Controls.Add(IL2CPPDumperGroupBox);
-            MinimumSize = new Size(0, 292);
+            MinimumSize = new Size(0, 228);
             Name = "SettingsForm";
             ShowIcon = false;
             StartPosition = FormStartPosition.CenterParent;
             Text = "Settings";
-            IL2CPPDumperGroupBox.ResumeLayout(false);
-            IL2CPPDumperGroupBox.PerformLayout();
             GamePathGroupBox.ResumeLayout(false);
             GamePathGroupBox.PerformLayout();
             ResumeLayout(false);
@@ -127,8 +102,6 @@
         #endregion
 
         private Button ApplyButton;
-        private GroupBox IL2CPPDumperGroupBox;
-        private TextBox il2cppPathTextBox;
         private OpenFileDialog openIL2CPPDumperDialog;
         private GroupBox GamePathGroupBox;
         private TextBox gamePathTextBox;

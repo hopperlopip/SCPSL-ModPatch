@@ -25,7 +25,7 @@ namespace SCPSL_ModPatch
                 File.WriteAllText(CONFIG_FILENAME, JsonConvert.SerializeObject(new ConfigurationClass(), Formatting.Indented));
             }
             config = GetConfiguration(CONFIG_FILENAME);
-            il2cppPathTextBox.Text = config.IL2CPP_Dumper_Path;
+            //il2cppPathTextBox.Text = config.IL2CPP_Dumper_Path;
             gamePathTextBox.Text = config.GameFolder_Path;
         }
 
@@ -42,7 +42,7 @@ namespace SCPSL_ModPatch
 
         private void SaveConfiguration(string configPath, ConfigurationClass config)
         {
-            config.IL2CPP_Dumper_Path = il2cppPathTextBox.Text;
+            //config.IL2CPP_Dumper_Path = il2cppPathTextBox.Text;
             config.GameFolder_Path = gamePathTextBox.Text;
             File.WriteAllText(configPath, JsonConvert.SerializeObject(config, Formatting.Indented));
         }
@@ -54,7 +54,7 @@ namespace SCPSL_ModPatch
 
         private void UpdateTextBoxes(ConfigurationClass config)
         {
-            il2cppPathTextBox.Text = config.IL2CPP_Dumper_Path;
+            //il2cppPathTextBox.Text = config.IL2CPP_Dumper_Path;
             gamePathTextBox.Text = config.GameFolder_Path;
         }
 

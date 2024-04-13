@@ -36,8 +36,12 @@
             v12radioButton = new RadioButton();
             v11radioButton = new RadioButton();
             il2cppButton = new Button();
+            versionChangerBox = new GroupBox();
+            changeVersionButton = new Button();
+            versionTextBox = new TextBox();
             versionGroupBox.SuspendLayout();
             radioPanel.SuspendLayout();
+            versionChangerBox.SuspendLayout();
             SuspendLayout();
             // 
             // openSettingsButton
@@ -45,7 +49,7 @@
             openSettingsButton.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             openSettingsButton.Location = new Point(3, 3);
             openSettingsButton.Name = "openSettingsButton";
-            openSettingsButton.Size = new Size(490, 44);
+            openSettingsButton.Size = new Size(607, 44);
             openSettingsButton.TabIndex = 0;
             openSettingsButton.Text = "Open settings";
             openSettingsButton.UseVisualStyleBackColor = true;
@@ -54,9 +58,9 @@
             // patchButton
             // 
             patchButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            patchButton.Location = new Point(3, 312);
+            patchButton.Location = new Point(3, 472);
             patchButton.Name = "patchButton";
-            patchButton.Size = new Size(490, 53);
+            patchButton.Size = new Size(607, 53);
             patchButton.TabIndex = 1;
             patchButton.Text = "Patch!";
             patchButton.UseVisualStyleBackColor = true;
@@ -68,7 +72,7 @@
             versionGroupBox.Controls.Add(radioPanel);
             versionGroupBox.Location = new Point(3, 53);
             versionGroupBox.Name = "versionGroupBox";
-            versionGroupBox.Size = new Size(490, 118);
+            versionGroupBox.Size = new Size(607, 118);
             versionGroupBox.TabIndex = 2;
             versionGroupBox.TabStop = false;
             versionGroupBox.Text = "Game version";
@@ -81,7 +85,7 @@
             radioPanel.Dock = DockStyle.Fill;
             radioPanel.Location = new Point(3, 23);
             radioPanel.Name = "radioPanel";
-            radioPanel.Size = new Size(484, 92);
+            radioPanel.Size = new Size(601, 92);
             radioPanel.TabIndex = 3;
             // 
             // v13radioButton
@@ -92,7 +96,7 @@
             v13radioButton.Dock = DockStyle.Top;
             v13radioButton.Location = new Point(0, 60);
             v13radioButton.Name = "v13radioButton";
-            v13radioButton.Size = new Size(484, 30);
+            v13radioButton.Size = new Size(601, 30);
             v13radioButton.TabIndex = 2;
             v13radioButton.TabStop = true;
             v13radioButton.Text = "13.0.0 – Current";
@@ -106,7 +110,7 @@
             v12radioButton.Dock = DockStyle.Top;
             v12radioButton.Location = new Point(0, 30);
             v12radioButton.Name = "v12radioButton";
-            v12radioButton.Size = new Size(484, 30);
+            v12radioButton.Size = new Size(601, 30);
             v12radioButton.TabIndex = 1;
             v12radioButton.Text = "12.0.2 – 13.0.0";
             v12radioButton.TextAlign = ContentAlignment.MiddleCenter;
@@ -119,7 +123,7 @@
             v11radioButton.Dock = DockStyle.Top;
             v11radioButton.Location = new Point(0, 0);
             v11radioButton.Name = "v11radioButton";
-            v11radioButton.Size = new Size(484, 30);
+            v11radioButton.Size = new Size(601, 30);
             v11radioButton.TabIndex = 0;
             v11radioButton.Text = "11.0 – 12.0.2";
             v11radioButton.TextAlign = ContentAlignment.MiddleCenter;
@@ -128,28 +132,69 @@
             // il2cppButton
             // 
             il2cppButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            il2cppButton.Location = new Point(3, 253);
+            il2cppButton.Location = new Point(3, 413);
             il2cppButton.Name = "il2cppButton";
-            il2cppButton.Size = new Size(490, 53);
+            il2cppButton.Size = new Size(607, 53);
             il2cppButton.TabIndex = 3;
-            il2cppButton.Text = "Run IL2CPP Dumper";
+            il2cppButton.Text = "Load IL2CPP";
             il2cppButton.UseVisualStyleBackColor = true;
             il2cppButton.Click += il2cppButton_Click;
+            // 
+            // versionChangerBox
+            // 
+            versionChangerBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            versionChangerBox.Controls.Add(changeVersionButton);
+            versionChangerBox.Controls.Add(versionTextBox);
+            versionChangerBox.Location = new Point(3, 177);
+            versionChangerBox.Name = "versionChangerBox";
+            versionChangerBox.Size = new Size(607, 162);
+            versionChangerBox.TabIndex = 4;
+            versionChangerBox.TabStop = false;
+            versionChangerBox.Text = "Version Changer";
+            // 
+            // changeVersionButton
+            // 
+            changeVersionButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            changeVersionButton.Location = new Point(6, 100);
+            changeVersionButton.Name = "changeVersionButton";
+            changeVersionButton.Size = new Size(595, 56);
+            changeVersionButton.TabIndex = 2;
+            changeVersionButton.Text = "Change version";
+            changeVersionButton.UseVisualStyleBackColor = true;
+            changeVersionButton.Click += changeVersionButton_Click;
+            // 
+            // versionTextBox
+            // 
+            versionTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            versionTextBox.BackColor = SystemColors.Control;
+            versionTextBox.BorderStyle = BorderStyle.None;
+            versionTextBox.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point);
+            versionTextBox.Location = new Point(6, 26);
+            versionTextBox.Multiline = true;
+            versionTextBox.Name = "versionTextBox";
+            versionTextBox.ReadOnly = true;
+            versionTextBox.Size = new Size(595, 62);
+            versionTextBox.TabIndex = 1;
+            versionTextBox.Text = "Game version:\r\nNA";
+            versionTextBox.TextAlign = HorizontalAlignment.Center;
             // 
             // ModPatchControl
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
+            Controls.Add(versionChangerBox);
             Controls.Add(il2cppButton);
             Controls.Add(versionGroupBox);
             Controls.Add(patchButton);
             Controls.Add(openSettingsButton);
-            MinimumSize = new Size(0, 289);
+            MinimumSize = new Size(0, 461);
             Name = "ModPatchControl";
-            Size = new Size(496, 368);
+            Size = new Size(613, 528);
             versionGroupBox.ResumeLayout(false);
             radioPanel.ResumeLayout(false);
             radioPanel.PerformLayout();
+            versionChangerBox.ResumeLayout(false);
+            versionChangerBox.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -166,5 +211,8 @@
         private RadioButton v12radioButton;
         private RadioButton v11radioButton;
         private Button il2cppButton;
+        private GroupBox versionChangerBox;
+        private TextBox versionTextBox;
+        private Button changeVersionButton;
     }
 }
