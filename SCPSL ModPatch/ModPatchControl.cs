@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Il2CppDumper;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -7,6 +8,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -17,11 +19,11 @@ namespace SCPSL_ModPatch
         const byte NOP = 144;
         const byte RET = 195;
         const string CONFIG_FILENAME = @".\config.json";
+        const string DUMP_FOLDER = @".\";
 
         ConfigurationClass config;
         List<byte> GameAssembly;
         string il2cpp_output_folder = @$"{Environment.CurrentDirectory}\IL2CPP_Output";
-        IL2CPP_Dumper_Output? il2cpp_output = null;
         VersionType versionType = VersionType.v13;
 
         public ModPatchControl()
@@ -116,96 +118,73 @@ namespace SCPSL_ModPatch
                     break;
             }
 
-            il2cpp_output = null;
-            try
-            {
-                il2cpp_output = IL2CPP_Dumper(config.IL2CPP_Dumper_Path, gameFolder, il2cpp_output_folder);
-            }
-            catch (Exception ex)
-            {
-                if (ex is IL2CPPDumperNotFoundException || ex is IL2CPPDumperErrorException)
-                {
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-            }
-        }
-
-        /*private void patchButton_Click(object sender, EventArgs e)
-        {
             config = SettingsForm.GetConfiguration(CONFIG_FILENAME);
             string gamePath = config.GameFolder_Path;
-            GameAssembly = new List<byte>();
+            string gameAssemblyPath = @$"{gamePath}\GameAssembly.dll";
+            string metadataPath = @$"{gamePath}\SCPSL_Data\il2cpp_data\Metadata\global-metadata.dat";
 
-            if (il2cpp_output == null)
+            if (!File.Exists(gameAssemblyPath))
             {
-                MessageBox.Show("You need to run IL2CPP Dumper first.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"File {Path.GetFileName(gameAssemblyPath)} not found");
+                return;
+            }
+            if (!File.Exists(metadataPath))
+            {
+                MessageBox.Show($"File {Path.GetFileName(metadataPath)} not found");
+                return;
+            }
+            Metadata? metadata;
+            Il2Cpp? il2Cpp;
+            try
+            {
+                if (!Il2CppDumperWorker.Init(gameAssemblyPath, metadataPath, out metadata, out il2Cpp))
+                {
+                    throw new Exception();
+                }
+            }
+            catch
+            {
+                MessageBox.Show("Make sure you selected right version of the game.", "IL2CppDumper Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            try
-            {
-                GameAssembly = GetGameAssemblyData(gamePath);
-            }
-            catch (Exception ex)
-            {
-                if (ex is GameFolderNotFoundException || ex is GameAssemblyNotFoundException)
-                {
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-            }
+            ulong rva = 13353760;
+            MessageBox.Show($"RVA: {rva} Offset: {il2Cpp.MapRTVA(rva)} Test: {il2Cpp.MapVATR(rva)}");
 
-            string gameAssemblyPath = @$"{gamePath}\GameAssembly.dll";
-            switch (versionType)
-            {
-                case VersionType.v11:
-
-                    break;
-
-                case VersionType.v12:
-
-                    break;
-
-                case VersionType.v13:
-                    PatchGameAssembly_v13(il2cpp_output, GameAssembly, gameAssemblyPath);
-                    break;
-            }
-
-            //PatchGameAssembly(il2cpp_output, versionType, GameAssembly, @$"{gamePath}\GameAssembly.dll");
-        }*/
+            Il2CppDumperWorker.Dump(metadata, il2Cpp, DUMP_FOLDER);
+        }
 
         private void patchButton_Click(object sender, EventArgs e)
         {
             config = SettingsForm.GetConfiguration(CONFIG_FILENAME);
             string gamePath = config.GameFolder_Path;
             string gameAssemblyPath = @$"{gamePath}\GameAssembly.dll";
-            string metadataPath = @$"{gamePath}\SCPSL_Data\il2cpp_data\Metadata\global-metadata.dat";
+            string dumpPath = $@"{DUMP_FOLDER}\dump.cs";
 
-            if (!File.Exists(gameAssemblyPath) || !File.Exists(metadataPath))
+            if (!File.Exists(dumpPath))
             {
-                MessageBox.Show("No files");
+                MessageBox.Show("The dump file is not found. Please start IL2CPP Dumper first.");
                 return;
             }
-            if (!Il2CppDumperWorker.Init(gameAssemblyPath, metadataPath, out var metadata, out var il2Cpp))
-            {
-                MessageBox.Show("Il2cppdumper error");
-                return;
-            }
+
+            PatchGameAssembly_v13(dumpPath, GameAssembly, gameAssemblyPath);
         }
 
-        private void PatchGameAssembly_v13(IL2CPP_Dumper_Output output, List<byte> gameAssemblyData, string gameAssemblyPath)
+        private void PatchGameAssembly_v13(string dumpPath, List<byte> gameAssemblyData, string gameAssemblyPath)
         {
-            int firstExceptionOffset = GetOffsetFromFuncName("LauncherCommunicator$$GetNativeDelegate<object>", output);
+            var dump = File.ReadAllText(dumpPath);
+
+            MessageBox.Show("ss");
+            int firstExceptionOffset = GetOffsetFromFuncName("LauncherCommunicator", "GetNativeDelegate<object>", dump);
             gameAssemblyData = PatchFunction(gameAssemblyData, firstExceptionOffset, 140, NOP, 3);
 
-            int thirdExceptionOffset = GetOffsetFromFuncName("SimpleMenu.<StartLoad>d__10$$MoveNext", output);
+            int thirdExceptionOffset = GetOffsetFromFuncName("SimpleMenu.<StartLoad>d__10", "MoveNext", dump);
             gameAssemblyData = PatchFunction(gameAssemblyData, thirdExceptionOffset, 243, NOP, 3);
 
-            int validationProgressOffset = GetOffsetFromFuncName("LauncherAssetScanProgressBar$$Update", output);
+            int validationProgressOffset = GetOffsetFromFuncName("LauncherAssetScanProgressBar", "Update", dump);
             gameAssemblyData = PatchFunction(gameAssemblyData, validationProgressOffset, 0, RET, 2);
 
-            int authFunctionOffset = GetOffsetFromFuncName("LauncherCommunicator$$Send", output);
+            int authFunctionOffset = GetOffsetFromFuncName("LauncherCommunicator", "Send", dump);
             gameAssemblyData = PatchFunction(gameAssemblyData, authFunctionOffset, 120, NOP, 4);
 
             //test
@@ -231,61 +210,36 @@ namespace SCPSL_ModPatch
             return gameAssemblyData;
         }
 
-        private GameVersion GetGameVersion(IL2CPP_Dumper_Output output, List<byte> data)
+        /*private GameVersion GetGameVersion(IL2CPP_Dumper_Output output, List<byte> data)
         {
             int gameVersionOffset = GetOffsetFromFuncName("GameCore.Version$$.cctor", output);
             GameVersion gameVersion = new GameVersion(data[gameVersionOffset + 125], data[gameVersionOffset + 143], data[gameVersionOffset + 161]);
             return gameVersion;
-        }
+        }*/
 
-        private int GetOffsetFromFuncName(string functionName, IL2CPP_Dumper_Output output)
+        private int GetOffsetFromFuncName(string className, string methodName, string dump)
         {
-            for (int i = 0; i < output.ScriptMethod.Length; i++)
+            MessageBox.Show("ss");
+            Regex regex = new Regex(className + @"[\S\s]*RVA: 0x([\dA-F]+) Offset: 0x([\dA-F]+) VA: 0x([\dA-F]+)[\S\s]*" + methodName);
+            Match match = regex.Match(dump);
+            if (match.Success)
             {
-                if (output.ScriptMethod[i].Name == functionName)
+                int offset;
+                try
                 {
-                    return output.ScriptMethod[i].Offset;
+                    offset = Convert.ToInt32(match.Groups[2].Value, 16);
                 }
+                catch
+                {
+                    return -1;
+                }
+
+                //test
+                MessageBox.Show($"Class: {className}\r\nMethod: {methodName}\r\nOffset: {offset}");
+
+                return offset;
             }
             return -1;
-        }
-
-        private IL2CPP_Dumper_Output IL2CPP_Dumper(string programPath, string gameFolder, string il2cppOutputFolder)
-        {
-            if (Directory.Exists(il2cppOutputFolder))
-            {
-                Directory.Delete(il2cppOutputFolder, true);
-            }
-            Directory.CreateDirectory(il2cppOutputFolder);
-
-            if (!File.Exists(programPath))
-            {
-                throw new IL2CPPDumperNotFoundException("IL2CPP Dumper not found. Please type correct path to this program.");
-            }
-
-            Process il2cppdumper = new Process();
-            //il2cppdumper.StartInfo.CreateNoWindow = true;
-            il2cppdumper.StartInfo.FileName = programPath;
-            //il2cppdumper.StartInfo.RedirectStandardOutput = true;
-            il2cppdumper.StartInfo.RedirectStandardError = true;
-            il2cppdumper.StartInfo.RedirectStandardInput = true;
-            il2cppdumper.StartInfo.Arguments = @$"""{gameFolder}\GameAssembly.dll"" ""{gameFolder}\SCPSL_Data\il2cpp_data\Metadata\global-metadata.dat"" ""{il2cppOutputFolder}""";
-            il2cppdumper.Start();
-            //il2cppdumper.BeginOutputReadLine();
-            il2cppdumper.StandardInput.WriteLine();
-            il2cppdumper.WaitForExit();
-            il2cppdumper.Close();
-
-            if (!File.Exists(@$"{il2cppOutputFolder}\script.json"))
-            {
-                throw new IL2CPPDumperErrorException("IL2CPP Dumper caused an error. Most likely you selected wrong version type.");
-            }
-            IL2CPP_Dumper_Output? output = JsonConvert.DeserializeObject<IL2CPP_Dumper_Output>(File.ReadAllText(@$"{il2cppOutputFolder}\script.json"));
-            if (output == null)
-            {
-                return new IL2CPP_Dumper_Output();
-            }
-            return output;
         }
     }
 }

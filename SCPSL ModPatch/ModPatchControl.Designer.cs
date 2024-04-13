@@ -132,7 +132,7 @@
             il2cppButton.Name = "il2cppButton";
             il2cppButton.Size = new Size(490, 53);
             il2cppButton.TabIndex = 3;
-            il2cppButton.Text = "Run IL2CPP Dumper";
+            il2cppButton.Text = "IL2CPP Dumper";
             il2cppButton.UseVisualStyleBackColor = true;
             il2cppButton.Click += il2cppButton_Click;
             // 

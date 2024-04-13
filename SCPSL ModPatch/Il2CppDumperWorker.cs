@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -140,6 +141,15 @@ namespace SCPSL_ModPatch
                 return false;
             }
             return true;
+        }
+
+        public static void Dump(Metadata metadata, Il2Cpp il2Cpp, string outputDir)
+        {
+            Console.WriteLine("Dumping...");
+            var executor = new Il2CppExecutor(metadata, il2Cpp);
+            var decompiler = new Il2CppDecompiler(executor);
+            decompiler.Decompile(new Config(), outputDir);
+            Console.WriteLine("Done!");
         }
     }
 }
