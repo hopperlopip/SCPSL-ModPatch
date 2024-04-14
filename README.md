@@ -1,4 +1,4 @@
-# GameObjectHierarchyTransfer
+# SCPSL-ModPatch
 Small unity tool that allows you extract GameObject Hierarchy and import it in another assets/level file.
 
 Used libraries/programs:
