@@ -61,6 +61,7 @@
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
             Name = "ChangeVersionForm";
+            ShowIcon = false;
             StartPosition = FormStartPosition.CenterParent;
             Text = "Change version";
             ResumeLayout(false);

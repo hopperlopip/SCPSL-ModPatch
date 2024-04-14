@@ -18,55 +18,57 @@ namespace SCPSL_ModPatch
     {
         const byte NOP = 144;
         const byte RET = 195;
+
         const string CONFIG_FILENAME = @".\config.json";
         const string IL2CPP_FOLDER = @".\il2cppdumper";
         const string IL2CPP_IS_NULL_MESSAGE = "IL2CPP is not loaded. Please load IL2CPP first.";
 
         ConfigurationClass config;
         List<byte> GameAssembly;
-        VersionType versionType = VersionType.v13;
+        VersionType versionType = VersionType.unity2021;
 
         Il2Cpp? il2Cpp = null;
         Metadata? metadata = null;
         ScriptJson scriptJson;
+        PatchInfo patchInfo;
 
         public ModPatchControl()
         {
             InitializeComponent();
-            v11radioButton.CheckedChanged += V11radioButton_CheckedChanged;
-            v12radioButton.CheckedChanged += V12radioButton_CheckedChanged;
-            v13radioButton.CheckedChanged += V13radioButton_CheckedChanged;
+            beforeValidationRadioButton.CheckedChanged += beforeValidationRadioButton_CheckedChanged;
+            afterValidationRadioButton.CheckedChanged += afterValidationRadioButton_CheckedChanged;
+            unity2021RadioButton.CheckedChanged += unity2021RadioButton_CheckedChanged;
         }
 
-        private void V13radioButton_CheckedChanged(object? sender, EventArgs e)
+        private void unity2021RadioButton_CheckedChanged(object? sender, EventArgs e)
         {
-            if (v13radioButton.Checked)
+            if (unity2021RadioButton.Checked)
             {
-                versionType = VersionType.v13;
+                versionType = VersionType.unity2021;
             }
         }
 
-        private void V12radioButton_CheckedChanged(object? sender, EventArgs e)
+        private void afterValidationRadioButton_CheckedChanged(object? sender, EventArgs e)
         {
-            if (v12radioButton.Checked)
+            if (afterValidationRadioButton.Checked)
             {
-                versionType = VersionType.v12;
+                versionType = VersionType.afterValidation;
             }
         }
 
-        private void V11radioButton_CheckedChanged(object? sender, EventArgs e)
+        private void beforeValidationRadioButton_CheckedChanged(object? sender, EventArgs e)
         {
-            if (v11radioButton.Checked)
+            if (beforeValidationRadioButton.Checked)
             {
-                versionType = VersionType.v11;
+                versionType = VersionType.beforeValidation;
             }
         }
 
         enum VersionType
         {
-            v11,
-            v12,
-            v13
+            beforeValidation,
+            afterValidation,
+            unity2021
         }
 
         private void openSettingsButton_Click(object sender, EventArgs e)
@@ -78,12 +80,6 @@ namespace SCPSL_ModPatch
         private List<byte> GetGameAssemblyData(string gameAssemblyPath)
         {
             List<byte> gameAssemblyData;
-            if (!File.Exists(gameAssemblyPath))
-            {
-                throw new GameAssemblyNotFoundException("Couldn't find GameAssembly.dll. Please type correct path to your game." +
-                    "\r\nIf you typed game folder correctly and your game doesn't have GameAssembly.dll," +
-                    " probably you're using game version that doesn't need the Mod Patch.");
-            }
             gameAssemblyData = File.ReadAllBytes(gameAssemblyPath).ToList();
             return gameAssemblyData;
         }
@@ -108,36 +104,42 @@ namespace SCPSL_ModPatch
             il2Cpp = null;
             metadata = null;
 
-            if (string.IsNullOrEmpty(gamePath))
+            if (string.IsNullOrEmpty(gamePath) || !Directory.Exists(gamePath))
             {
-                MessageBox.Show("Game path is empty. Please type valid game path in the settings.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Game path is invalid. Please type valid game path in the settings.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
-            }
-
-            switch (versionType)
-            {
-                case VersionType.v11:
-                    FixMetadataVersion(24, gamePath);
-                    break;
-
-                case VersionType.v12:
-                    FixMetadataVersion(24, gamePath);
-                    break;
-
-                case VersionType.v13:
-                    FixMetadataVersion(29, gamePath);
-                    break;
             }
 
             if (!File.Exists(gameAssemblyPath))
             {
-                MessageBox.Show($"File {Path.GetFileName(gameAssemblyPath)} not found");
+                MessageBox.Show($"Couldn't find GameAssembly.dll. Please type correct path to your game." +
+                    "\r\nIf you typed game folder correctly and your game doesn't have GameAssembly.dll," +
+                    " probably you're using game version that doesn't need the Mod Patch.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             if (!File.Exists(metadataPath))
             {
-                MessageBox.Show($"File {Path.GetFileName(metadataPath)} not found");
+                MessageBox.Show($"Couldn't find {Path.GetFileName(metadataPath)}. Please type correct path to your game.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
+            }
+
+            PatchInfos patchInfos = new();
+            switch (versionType)
+            {
+                case VersionType.beforeValidation:
+                    FixMetadataVersion(24, gamePath);
+                    patchInfo = patchInfos.beforeValidationPatchInfo;
+                    break;
+
+                case VersionType.afterValidation:
+                    FixMetadataVersion(24, gamePath);
+                    patchInfo = patchInfos.afterValidationPatchInfo;
+                    break;
+
+                case VersionType.unity2021:
+                    FixMetadataVersion(29, gamePath);
+                    patchInfo = patchInfos.unity2021PatchInfo;
+                    break;
             }
 
             try
@@ -175,7 +177,7 @@ namespace SCPSL_ModPatch
                 Directory.Delete(IL2CPP_FOLDER, true);
             }
 
-            ChangeVersionTextBoxLines(1, GetGameVersion(scriptJson, GameAssembly).ToString());
+            ChangeVersionTextBoxLines(1, GetGameVersion(scriptJson, patchInfo, GameAssembly).ToString());
         }
 
         private void ChangeVersionTextBoxLines(int i, string value)
@@ -208,7 +210,7 @@ namespace SCPSL_ModPatch
                 return;
             }
 
-            PatchGameAssembly_v13(scriptJson, GameAssembly, gameAssemblyPath);
+            PatchGameAssembly(scriptJson, patchInfo, GameAssembly, gameAssemblyPath);
 
             GC.Collect();
             GC.WaitForPendingFinalizers();
@@ -224,22 +226,14 @@ namespace SCPSL_ModPatch
             return scriptJson;
         }
 
-        private void PatchGameAssembly_v13(ScriptJson scriptJson, List<byte> gameAssemblyData, string gameAssemblyPath)
+        private void PatchGameAssembly(ScriptJson scriptJson, PatchInfo patchInfo, List<byte> gameAssemblyData, string gameAssemblyPath)
         {
-            int firstExceptionOffset = GetOffsetFromFuncName("LauncherCommunicator$$GetNativeDelegate<object>", scriptJson);
-            gameAssemblyData = PatchFunction(gameAssemblyData, firstExceptionOffset, 140, NOP, 3);
-
-            int thirdExceptionOffset = GetOffsetFromFuncName("SimpleMenu.<StartLoad>d__10$$MoveNext", scriptJson);
-            gameAssemblyData = PatchFunction(gameAssemblyData, thirdExceptionOffset, 243, NOP, 3);
-
-            int validationProgressOffset = GetOffsetFromFuncName("LauncherAssetScanProgressBar$$Update", scriptJson);
-            gameAssemblyData = PatchFunction(gameAssemblyData, validationProgressOffset, 0, RET, 2);
-
-            int authFunctionOffset = GetOffsetFromFuncName("LauncherCommunicator$$Send", scriptJson);
-            gameAssemblyData = PatchFunction(gameAssemblyData, authFunctionOffset, 120, NOP, 4);
-
-            /*MessageBox.Show($"firstExceptionOffset: {firstExceptionOffset}\r\nthirdExceptionOffset {thirdExceptionOffset}\r\n" +
-                $"validationProgressOffset: {validationProgressOffset}\r\nauthFunctionOffset: {authFunctionOffset}");*/
+            for (int i = 0; i < patchInfo.methods.Count; i++)
+            {
+                MethodInfo method = patchInfo.methods[i];
+                int functionOffset = GetOffsetFromFuncName(method.name, scriptJson);
+                gameAssemblyData = PatchFunction(gameAssemblyData, functionOffset, method.instructionOffset, method.newInstruction, method.instructionSize);
+            }
 
             SaveGameAssembly(gameAssemblyPath, gameAssemblyData);
         }
@@ -265,19 +259,22 @@ namespace SCPSL_ModPatch
             return gameAssemblyData;
         }
 
-        private GameVersion GetGameVersion(ScriptJson scriptJson, List<byte> data)
+        private GameVersion GetGameVersion(ScriptJson scriptJson, PatchInfo patchInfo, List<byte> data)
         {
-            int gameVersionOffset = GetOffsetFromFuncName("GameCore.Version$$.cctor", scriptJson);
-            GameVersion gameVersion = new GameVersion(data[gameVersionOffset + 125], data[gameVersionOffset + 143], data[gameVersionOffset + 161]);
+            int gameVersionOffset = GetOffsetFromFuncName(patchInfo.gameVersionMethod.name, scriptJson);
+            GameVersion gameVersion = new GameVersion(
+                data[gameVersionOffset + patchInfo.gameVersionMethod.majorOffset],
+                data[gameVersionOffset + patchInfo.gameVersionMethod.minorOffset],
+                data[gameVersionOffset + patchInfo.gameVersionMethod.patchOffset]);
             return gameVersion;
         }
 
-        private List<byte> ChangeGameVersion(ScriptJson scriptJson, List<byte> data, GameVersion version)
+        private List<byte> ChangeGameVersion(ScriptJson scriptJson, PatchInfo patchInfo, List<byte> data, GameVersion version)
         {
-            int gameVersionOffset = GetOffsetFromFuncName("GameCore.Version$$.cctor", scriptJson);
-            data[gameVersionOffset + 125] = version.major;
-            data[gameVersionOffset + 143] = version.minor;
-            data[gameVersionOffset + 161] = version.patch;
+            int gameVersionOffset = GetOffsetFromFuncName(patchInfo.gameVersionMethod.name, scriptJson);
+            data[gameVersionOffset + patchInfo.gameVersionMethod.majorOffset] = version.major;
+            data[gameVersionOffset + patchInfo.gameVersionMethod.minorOffset] = version.minor;
+            data[gameVersionOffset + patchInfo.gameVersionMethod.patchOffset] = version.patch;
             return data;
         }
 
@@ -309,9 +306,14 @@ namespace SCPSL_ModPatch
 
             ChangeVersionForm changeVersionForm = new ChangeVersionForm(new GameVersion(versionTextBox.Lines[1]));
             changeVersionForm.ShowDialog();
-            GameAssembly = ChangeGameVersion(scriptJson, GameAssembly, changeVersionForm.version);
-            ChangeVersionTextBoxLines(1, changeVersionForm.version.ToString());
 
+            if (!changeVersionForm.versionChanged)
+            {
+                return;
+            }
+
+            GameAssembly = ChangeGameVersion(scriptJson, patchInfo, GameAssembly, changeVersionForm.version);
+            ChangeVersionTextBoxLines(1, changeVersionForm.version.ToString());
             SaveGameAssembly(gameAssemblyPath, GameAssembly);
         }
     }

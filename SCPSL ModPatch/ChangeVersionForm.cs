@@ -13,6 +13,7 @@ namespace SCPSL_ModPatch
     public partial class ChangeVersionForm : Form
     {
         public GameVersion version;
+        public bool versionChanged = false;
 
         public ChangeVersionForm(GameVersion version)
         {
@@ -32,6 +33,7 @@ namespace SCPSL_ModPatch
                 MessageBox.Show(ex.Message);
                 return;
             }
+            versionChanged = true;
             Close();
         }
 

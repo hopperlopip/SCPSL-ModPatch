@@ -37,14 +37,14 @@
             modPatchControl1.Location = new Point(0, 0);
             modPatchControl1.MinimumSize = new Size(0, 289);
             modPatchControl1.Name = "modPatchControl1";
-            modPatchControl1.Size = new Size(611, 459);
+            modPatchControl1.Size = new Size(611, 479);
             modPatchControl1.TabIndex = 0;
             // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(611, 459);
+            ClientSize = new Size(611, 479);
             Controls.Add(modPatchControl1);
             MinimumSize = new Size(0, 506);
             Name = "MainForm";

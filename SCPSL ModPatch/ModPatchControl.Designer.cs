@@ -32,9 +32,9 @@
             patchButton = new Button();
             versionGroupBox = new GroupBox();
             radioPanel = new Panel();
-            v13radioButton = new RadioButton();
-            v12radioButton = new RadioButton();
-            v11radioButton = new RadioButton();
+            unity2021RadioButton = new RadioButton();
+            afterValidationRadioButton = new RadioButton();
+            beforeValidationRadioButton = new RadioButton();
             il2cppButton = new Button();
             versionChangerBox = new GroupBox();
             changeVersionButton = new Button();
@@ -58,10 +58,10 @@
             // patchButton
             // 
             patchButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            patchButton.Location = new Point(3, 472);
+            patchButton.Location = new Point(3, 455);
             patchButton.Name = "patchButton";
             patchButton.Size = new Size(607, 53);
-            patchButton.TabIndex = 1;
+            patchButton.TabIndex = 2;
             patchButton.Text = "Patch!";
             patchButton.UseVisualStyleBackColor = true;
             patchButton.Click += patchButton_Click;
@@ -79,63 +79,63 @@
             // 
             // radioPanel
             // 
-            radioPanel.Controls.Add(v13radioButton);
-            radioPanel.Controls.Add(v12radioButton);
-            radioPanel.Controls.Add(v11radioButton);
+            radioPanel.Controls.Add(unity2021RadioButton);
+            radioPanel.Controls.Add(afterValidationRadioButton);
+            radioPanel.Controls.Add(beforeValidationRadioButton);
             radioPanel.Dock = DockStyle.Fill;
             radioPanel.Location = new Point(3, 23);
             radioPanel.Name = "radioPanel";
             radioPanel.Size = new Size(601, 92);
             radioPanel.TabIndex = 3;
             // 
-            // v13radioButton
+            // unity2021RadioButton
             // 
-            v13radioButton.Appearance = Appearance.Button;
-            v13radioButton.AutoSize = true;
-            v13radioButton.Checked = true;
-            v13radioButton.Dock = DockStyle.Top;
-            v13radioButton.Location = new Point(0, 60);
-            v13radioButton.Name = "v13radioButton";
-            v13radioButton.Size = new Size(601, 30);
-            v13radioButton.TabIndex = 2;
-            v13radioButton.TabStop = true;
-            v13radioButton.Text = "13.0.0 – Current";
-            v13radioButton.TextAlign = ContentAlignment.MiddleCenter;
-            v13radioButton.UseVisualStyleBackColor = true;
+            unity2021RadioButton.Appearance = Appearance.Button;
+            unity2021RadioButton.AutoSize = true;
+            unity2021RadioButton.Checked = true;
+            unity2021RadioButton.Dock = DockStyle.Top;
+            unity2021RadioButton.Location = new Point(0, 60);
+            unity2021RadioButton.Name = "unity2021RadioButton";
+            unity2021RadioButton.Size = new Size(601, 30);
+            unity2021RadioButton.TabIndex = 2;
+            unity2021RadioButton.TabStop = true;
+            unity2021RadioButton.Text = "13.0.0 – Current";
+            unity2021RadioButton.TextAlign = ContentAlignment.MiddleCenter;
+            unity2021RadioButton.UseVisualStyleBackColor = true;
             // 
-            // v12radioButton
+            // afterValidationRadioButton
             // 
-            v12radioButton.Appearance = Appearance.Button;
-            v12radioButton.AutoSize = true;
-            v12radioButton.Dock = DockStyle.Top;
-            v12radioButton.Location = new Point(0, 30);
-            v12radioButton.Name = "v12radioButton";
-            v12radioButton.Size = new Size(601, 30);
-            v12radioButton.TabIndex = 1;
-            v12radioButton.Text = "12.0.2 – 13.0.0";
-            v12radioButton.TextAlign = ContentAlignment.MiddleCenter;
-            v12radioButton.UseVisualStyleBackColor = true;
+            afterValidationRadioButton.Appearance = Appearance.Button;
+            afterValidationRadioButton.AutoSize = true;
+            afterValidationRadioButton.Dock = DockStyle.Top;
+            afterValidationRadioButton.Location = new Point(0, 30);
+            afterValidationRadioButton.Name = "afterValidationRadioButton";
+            afterValidationRadioButton.Size = new Size(601, 30);
+            afterValidationRadioButton.TabIndex = 1;
+            afterValidationRadioButton.Text = "11.1.5 – 12.0.2";
+            afterValidationRadioButton.TextAlign = ContentAlignment.MiddleCenter;
+            afterValidationRadioButton.UseVisualStyleBackColor = true;
             // 
-            // v11radioButton
+            // beforeValidationRadioButton
             // 
-            v11radioButton.Appearance = Appearance.Button;
-            v11radioButton.AutoSize = true;
-            v11radioButton.Dock = DockStyle.Top;
-            v11radioButton.Location = new Point(0, 0);
-            v11radioButton.Name = "v11radioButton";
-            v11radioButton.Size = new Size(601, 30);
-            v11radioButton.TabIndex = 0;
-            v11radioButton.Text = "11.0 – 12.0.2";
-            v11radioButton.TextAlign = ContentAlignment.MiddleCenter;
-            v11radioButton.UseVisualStyleBackColor = true;
+            beforeValidationRadioButton.Appearance = Appearance.Button;
+            beforeValidationRadioButton.AutoSize = true;
+            beforeValidationRadioButton.Dock = DockStyle.Top;
+            beforeValidationRadioButton.Location = new Point(0, 0);
+            beforeValidationRadioButton.Name = "beforeValidationRadioButton";
+            beforeValidationRadioButton.Size = new Size(601, 30);
+            beforeValidationRadioButton.TabIndex = 0;
+            beforeValidationRadioButton.Text = "10.2.0 – 11.1.4";
+            beforeValidationRadioButton.TextAlign = ContentAlignment.MiddleCenter;
+            beforeValidationRadioButton.UseVisualStyleBackColor = true;
             // 
             // il2cppButton
             // 
             il2cppButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            il2cppButton.Location = new Point(3, 413);
+            il2cppButton.Location = new Point(3, 396);
             il2cppButton.Name = "il2cppButton";
             il2cppButton.Size = new Size(607, 53);
-            il2cppButton.TabIndex = 3;
+            il2cppButton.TabIndex = 1;
             il2cppButton.Text = "Load IL2CPP";
             il2cppButton.UseVisualStyleBackColor = true;
             il2cppButton.Click += il2cppButton_Click;
@@ -158,7 +158,7 @@
             changeVersionButton.Location = new Point(6, 100);
             changeVersionButton.Name = "changeVersionButton";
             changeVersionButton.Size = new Size(595, 56);
-            changeVersionButton.TabIndex = 2;
+            changeVersionButton.TabIndex = 3;
             changeVersionButton.Text = "Change version";
             changeVersionButton.UseVisualStyleBackColor = true;
             changeVersionButton.Click += changeVersionButton_Click;
@@ -189,7 +189,7 @@
             Controls.Add(openSettingsButton);
             MinimumSize = new Size(0, 461);
             Name = "ModPatchControl";
-            Size = new Size(613, 528);
+            Size = new Size(613, 511);
             versionGroupBox.ResumeLayout(false);
             radioPanel.ResumeLayout(false);
             radioPanel.PerformLayout();
@@ -207,9 +207,9 @@
         private Panel radioPanel;
         private SplitContainer splitContainer1;
         private RichTextBox noticeTextBox;
-        private RadioButton v13radioButton;
-        private RadioButton v12radioButton;
-        private RadioButton v11radioButton;
+        private RadioButton unity2021RadioButton;
+        private RadioButton afterValidationRadioButton;
+        private RadioButton beforeValidationRadioButton;
         private Button il2cppButton;
         private GroupBox versionChangerBox;
         private TextBox versionTextBox;
