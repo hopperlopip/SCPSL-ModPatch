@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace SCPSL_ModPatch
 {
-    public class ConfigurationClass
+    [Serializable]
+    public class FileIsProtectedException : Exception
     {
-        public string GameFolder_Path = string.Empty;
-        public string Unlicense_Path = @".\unlicense.exe";
+        public FileIsProtectedException() { }
     }
 }

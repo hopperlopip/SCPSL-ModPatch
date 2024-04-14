@@ -104,10 +104,11 @@ namespace SCPSL_ModPatch
                 {
                     if (!flag && il2Cpp is PE)
                     {
-                        Console.WriteLine("Use custom PE loader");
+                        throw new FileIsProtectedException();
+                        /*Console.WriteLine("Use custom PE loader");
                         il2Cpp = PELoader.Load(il2cppPath);
                         il2Cpp.SetProperties(version, metadata.metadataUsagesCount);
-                        flag = il2Cpp.PlusSearch(metadata.methodDefs.Count(x => x.methodIndex >= 0), metadata.typeDefs.Length, metadata.imageDefs.Length);
+                        flag = il2Cpp.PlusSearch(metadata.methodDefs.Count(x => x.methodIndex >= 0), metadata.typeDefs.Length, metadata.imageDefs.Length);*/
                     }
                 }
                 if (!flag)
@@ -136,6 +137,10 @@ namespace SCPSL_ModPatch
             }
             catch (Exception e)
             {
+                if (e is FileIsProtectedException)
+                {
+                    throw new FileIsProtectedException();
+                }
                 Console.WriteLine(e);
                 Console.WriteLine("ERROR: An error occurred while processing.");
                 return false;

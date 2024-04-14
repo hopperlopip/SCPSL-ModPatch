@@ -33,13 +33,16 @@
             GamePathGroupBox = new GroupBox();
             gamePathTextBox = new TextBox();
             resetButton = new Button();
+            UnlicenseGroupBox = new GroupBox();
+            unlicenseTextBox = new TextBox();
             GamePathGroupBox.SuspendLayout();
+            UnlicenseGroupBox.SuspendLayout();
             SuspendLayout();
             // 
             // ApplyButton
             // 
             ApplyButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            ApplyButton.Location = new Point(12, 77);
+            ApplyButton.Location = new Point(12, 146);
             ApplyButton.Name = "ApplyButton";
             ApplyButton.Size = new Size(485, 43);
             ApplyButton.TabIndex = 0;
@@ -73,7 +76,7 @@
             // resetButton
             // 
             resetButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            resetButton.Location = new Point(12, 126);
+            resetButton.Location = new Point(12, 195);
             resetButton.Name = "resetButton";
             resetButton.Size = new Size(485, 43);
             resetButton.TabIndex = 3;
@@ -81,21 +84,43 @@
             resetButton.UseVisualStyleBackColor = true;
             resetButton.Click += resetButton_Click;
             // 
+            // UnlicenseGroupBox
+            // 
+            UnlicenseGroupBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            UnlicenseGroupBox.Controls.Add(unlicenseTextBox);
+            UnlicenseGroupBox.Location = new Point(12, 75);
+            UnlicenseGroupBox.Name = "UnlicenseGroupBox";
+            UnlicenseGroupBox.Size = new Size(485, 61);
+            UnlicenseGroupBox.TabIndex = 4;
+            UnlicenseGroupBox.TabStop = false;
+            UnlicenseGroupBox.Text = "Unlicense Path (Themida unpacker)";
+            // 
+            // unlicenseTextBox
+            // 
+            unlicenseTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            unlicenseTextBox.Location = new Point(6, 26);
+            unlicenseTextBox.Name = "unlicenseTextBox";
+            unlicenseTextBox.Size = new Size(473, 27);
+            unlicenseTextBox.TabIndex = 0;
+            // 
             // SettingsForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(509, 181);
+            ClientSize = new Size(509, 250);
+            Controls.Add(UnlicenseGroupBox);
             Controls.Add(resetButton);
             Controls.Add(ApplyButton);
             Controls.Add(GamePathGroupBox);
-            MinimumSize = new Size(0, 228);
+            MinimumSize = new Size(0, 297);
             Name = "SettingsForm";
             ShowIcon = false;
             StartPosition = FormStartPosition.CenterParent;
             Text = "Settings";
             GamePathGroupBox.ResumeLayout(false);
             GamePathGroupBox.PerformLayout();
+            UnlicenseGroupBox.ResumeLayout(false);
+            UnlicenseGroupBox.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -106,5 +131,7 @@
         private GroupBox GamePathGroupBox;
         private TextBox gamePathTextBox;
         private Button resetButton;
+        private GroupBox UnlicenseGroupBox;
+        private TextBox unlicenseTextBox;
     }
 }

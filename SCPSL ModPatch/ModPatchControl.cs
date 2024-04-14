@@ -149,10 +149,31 @@ namespace SCPSL_ModPatch
                     throw new Exception();
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                MessageBox.Show("Make sure you selected right version of the game.", "IL2CppDumper Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                if (ex is FileIsProtectedException)
+                {
+                    DialogResult userChoice = MessageBox.Show("Looks like GameAssembly.dll is virtualized by protector (most likely Themida).\r\n" +
+                        "Do you want to try to unpack GameAssembly.dll by unpacker?", "Question", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                    if (userChoice == DialogResult.No)
+                    {
+                        return;
+                    }
+                    string unpackerPath = config.Unlicense_Path;
+                    if (!File.Exists(unpackerPath))
+                    {
+                        MessageBox.Show("Path is invalid. Please type valid path and try again.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    StartThemidaUnpackerProcess(unpackerPath, gameAssemblyPath);
+                    MessageBox.Show("Please start IL2CPP loading again.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+                else
+                {
+                    MessageBox.Show("Make sure you selected right version of the game.", "IL2CppDumper Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
             }
 
             GameAssembly = GetGameAssemblyData(gameAssemblyPath);
@@ -178,6 +199,26 @@ namespace SCPSL_ModPatch
             }
 
             ChangeVersionTextBoxLines(1, GetGameVersion(scriptJson, patchInfo, GameAssembly).ToString());
+        }
+
+        private void StartThemidaUnpackerProcess(string unpackerPath, string gameAssemblyPath)
+        {
+            Process unpacker = new Process();
+            unpacker.StartInfo.FileName = unpackerPath;
+            unpacker.StartInfo.Arguments = $"\"{gameAssemblyPath}\"";
+            unpacker.Start();
+            unpacker.WaitForExit();
+            unpacker.Close();
+
+            string unpackerFolder = GetParentFolderFromFilePath(unpackerPath);
+            string unpackedGameAssemblyPath = @$"{unpackerFolder}\unpacked_GameAssembly.dll";
+            File.Delete(gameAssemblyPath);
+            File.Move(unpackedGameAssemblyPath, gameAssemblyPath);
+        }
+
+        private string GetParentFolderFromFilePath(string filePath)
+        {
+            return filePath.Replace(@$"\{Path.GetFileName(filePath)}", string.Empty);
         }
 
         private void ChangeVersionTextBoxLines(int i, string value)

@@ -26,6 +26,7 @@ namespace SCPSL_ModPatch
             }
             config = GetConfiguration(CONFIG_FILENAME);
             gamePathTextBox.Text = config.GameFolder_Path;
+            unlicenseTextBox.Text = config.Unlicense_Path;
         }
 
         public static ConfigurationClass GetConfiguration(string configPath)
@@ -46,6 +47,7 @@ namespace SCPSL_ModPatch
         private void SaveConfiguration(string configPath, ConfigurationClass config)
         {
             config.GameFolder_Path = gamePathTextBox.Text;
+            config.Unlicense_Path = unlicenseTextBox.Text;
             File.WriteAllText(configPath, JsonConvert.SerializeObject(config, Formatting.Indented));
         }
 
@@ -57,6 +59,7 @@ namespace SCPSL_ModPatch
         private void UpdateTextBoxes(ConfigurationClass config)
         {
             gamePathTextBox.Text = config.GameFolder_Path;
+            unlicenseTextBox.Text = config.Unlicense_Path;
         }
 
         private void resetButton_Click(object sender, EventArgs e)
