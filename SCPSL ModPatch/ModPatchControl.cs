@@ -224,7 +224,7 @@ namespace SCPSL_ModPatch
             {
                 if (ex is GameVersionNotFoundException)
                 {
-                    gameVersion = "Game version is not found in scripts";
+                    gameVersion = "Game version is not found in GameAssembly.dll";
                     patchInfo.gameVersionMethod.methodNotFound = true;
                 }
             }
@@ -405,7 +405,7 @@ namespace SCPSL_ModPatch
 
             if (patchInfo.gameVersionMethod.methodNotFound)
             {
-                MessageBox.Show("Game version is not found in scripts.\r\n" +
+                MessageBox.Show("Game version is not found in \"GameAssembly.dll\".\r\n" +
                     "Try to find game version data in \"global-metadata.dat\".", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
