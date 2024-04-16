@@ -21,19 +21,19 @@ namespace SCPSL_ModPatch
 
         const string CONFIG_FILENAME = @".\config.json";
         const string IL2CPP_FOLDER = @".\il2cppdumper";
+        const string LAUNCHERS_FOLDER = @".\clean_launchers";
         const string IL2CPP_IS_NULL_MESSAGE = "IL2CPP is not loaded. Please load IL2CPP first.";
 
         ConfigurationClass config;
         List<byte> GameAssembly;
         VersionType versionType = VersionType.unity2021;
+        VersionType il2cppVersionType;
 
         Il2Cpp? il2Cpp = null;
         Metadata? metadata = null;
         ScriptJson scriptJson;
         PatchInfo patchInfo;
         string defaultGameVersionString;
-        bool gameVersionIsNotInScripts = false;
-        VersionType il2cppVersionType;
 
         public ModPatchControl()
         {
@@ -225,7 +225,7 @@ namespace SCPSL_ModPatch
                 if (ex is GameVersionNotFoundException)
                 {
                     gameVersion = "Game version is not found in scripts";
-                    gameVersionIsNotInScripts = true;
+                    patchInfo.gameVersionMethod.methodNotFound = true;
                 }
             }
             ChangeVersionTextBoxLines(1, gameVersion);
@@ -276,12 +276,38 @@ namespace SCPSL_ModPatch
                 return;
             }
 
-            CheckVersionType(il2cppVersionType, versionType);
+            if (!VersionTypeValid(il2cppVersionType, versionType))
+            {
+                return;
+            }
 
             PatchGameAssembly(scriptJson, patchInfo, GameAssembly, gameAssemblyPath);
+            LauncherReplacer(gamePath, LAUNCHERS_FOLDER);
 
             GC.Collect();
             GC.WaitForPendingFinalizers();
+        }
+
+        private void LauncherReplacer(string gamePath, string launchersFolder)
+        {
+            string postfix;
+
+            if (versionType == VersionType.unity2021)
+            {
+                postfix = "Unity2021";
+            }
+            else
+            {
+                postfix = "Unity2019";
+            }
+
+            string nativeLauncherPath = @$"{gamePath}\SCPSL.exe";
+            string cleanLauncherPath = @$"{launchersFolder}\SCPSL_{postfix}.exe";
+
+            if (File.Exists(cleanLauncherPath))
+            {
+                File.Copy(cleanLauncherPath, nativeLauncherPath, true);
+            }
         }
 
         private ScriptJson GetScriptJSON(string scriptPath)
@@ -377,14 +403,17 @@ namespace SCPSL_ModPatch
                 return;
             }
 
-            if (gameVersionIsNotInScripts)
+            if (patchInfo.gameVersionMethod.methodNotFound)
             {
                 MessageBox.Show("Game version is not found in scripts.\r\n" +
                     "Try to check game version data in \"global-metadata.dat\".", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            CheckVersionType(il2cppVersionType, versionType);
+            if (!VersionTypeValid(il2cppVersionType, versionType))
+            {
+                return;
+            }
 
             config = SettingsForm.GetConfiguration(CONFIG_FILENAME);
             string gamePath = config.GameFolder_Path;
@@ -403,35 +432,14 @@ namespace SCPSL_ModPatch
             SaveGameAssembly(gameAssemblyPath, GameAssembly);
         }
 
-        private void CheckVersionType(VersionType il2cppVersionType, VersionType versionType)
+        private bool VersionTypeValid(VersionType il2cppVersionType, VersionType versionType)
         {
             if (il2cppVersionType != versionType)
             {
-                string versionTypeMessage = GetVersionTypeName(versionType);
-                string il2cppVersionTypeMessage = GetVersionTypeName(il2cppVersionType);
-
-                MessageBox.Show($"You've selected these versions ({versionTypeMessage}) but you've loaded IL2CPP for ({il2cppVersionTypeMessage}) versions.\r\n" +
-                    "Program will patch the game using version settings that have been selected for IL2CPP load, so if you want to patch the game for selected version " +
-                    "you need to load IL2CPP for new versions again.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("IL2CPP is loaded for different versions. Please load IL2CPP again to continue.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
             }
-        }
-
-        private string GetVersionTypeName(VersionType versionType)
-        {
-            string versionTypeMessage = string.Empty;
-            switch (versionType)
-            {
-                case VersionType.beforeValidation:
-                    versionTypeMessage = beforeValidationRadioButton.Text;
-                    break;
-                case VersionType.afterValidation:
-                    versionTypeMessage = afterValidationRadioButton.Text;
-                    break;
-                case VersionType.unity2021:
-                    versionTypeMessage = unity2021RadioButton.Text;
-                    break;
-            }
-            return versionTypeMessage;
+            return true;
         }
     }
 }

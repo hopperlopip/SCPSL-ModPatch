@@ -24,19 +24,19 @@ namespace SCPSL_ModPatch
             string[] version = versionStr.Split(separator);
             if (version.Length != 3)
             {
-                throw new Exception("Invalid version string.");
+                throw new Exception("Invalid version.");
             }
             if (!byte.TryParse(version[0], out major))
             {
-                throw new Exception("Invalid major string.");
+                throw new Exception("Invalid major number. Value must be from 0 to 255.");
             }
             if (!byte.TryParse(version[1], out minor))
             {
-                throw new Exception("Invalid minor string.");
+                throw new Exception("Invalid minor number. Value must be from 0 to 255.");
             }
             if (!byte.TryParse(version[2], out patch))
             {
-                throw new Exception("Invalid patch string.");
+                throw new Exception("Invalid patch number. Value must be from 0 to 255.");
             }
         }
 
