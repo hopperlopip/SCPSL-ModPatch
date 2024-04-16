@@ -125,7 +125,7 @@
             beforeValidationRadioButton.Name = "beforeValidationRadioButton";
             beforeValidationRadioButton.Size = new Size(601, 30);
             beforeValidationRadioButton.TabIndex = 0;
-            beforeValidationRadioButton.Text = "10.2.0 – 11.1.4";
+            beforeValidationRadioButton.Text = "10.1.0 – 11.1.4";
             beforeValidationRadioButton.TextAlign = ContentAlignment.MiddleCenter;
             beforeValidationRadioButton.UseVisualStyleBackColor = true;
             // 

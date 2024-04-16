@@ -328,7 +328,7 @@ namespace SCPSL_ModPatch
                 int functionOffset = GetOffsetFromFuncName(method.name, scriptJson);
                 if (functionOffset < 0)
                 {
-                    MessageBox.Show($"Couldn't patch ({method.name}) function", "Warning",  MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show($"Couldn't patch ({method.name}) function", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
                 gameAssemblyData = PatchFunction(gameAssemblyData, functionOffset, method.instructionOffset, method.newInstruction, method.instructionSize);
@@ -406,7 +406,7 @@ namespace SCPSL_ModPatch
             if (patchInfo.gameVersionMethod.methodNotFound)
             {
                 MessageBox.Show("Game version is not found in scripts.\r\n" +
-                    "Try to check game version data in \"global-metadata.dat\".", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    "Try to find game version data in \"global-metadata.dat\".", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
