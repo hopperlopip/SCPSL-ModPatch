@@ -183,7 +183,7 @@ namespace SCPSL_ModPatch
                     File.Delete(gameAssemblyPath);
                     File.Move(unpackedGameAssemblyPath, gameAssemblyPath);
 
-                    MessageBox.Show("Please start IL2CPP loading again.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Please start IL2CPP load again.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
                 else
