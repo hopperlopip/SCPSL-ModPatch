@@ -31,10 +31,14 @@ namespace SCPSL_ModPatch
         Metadata? metadata = null;
         ScriptJson scriptJson;
         PatchInfo patchInfo;
+        string defaultGameVersionString;
+        bool gameVersionIsNotInScripts = false;
+        VersionType il2cppVersionType;
 
         public ModPatchControl()
         {
             InitializeComponent();
+            defaultGameVersionString = versionTextBox.Lines[1];
             beforeValidationRadioButton.CheckedChanged += beforeValidationRadioButton_CheckedChanged;
             afterValidationRadioButton.CheckedChanged += afterValidationRadioButton_CheckedChanged;
             unity2021RadioButton.CheckedChanged += unity2021RadioButton_CheckedChanged;
@@ -103,6 +107,7 @@ namespace SCPSL_ModPatch
 
             il2Cpp = null;
             metadata = null;
+            ChangeVersionTextBoxLines(1, defaultGameVersionString);
 
             if (string.IsNullOrEmpty(gamePath) || !Directory.Exists(gamePath))
             {
@@ -141,6 +146,7 @@ namespace SCPSL_ModPatch
                     patchInfo = patchInfos.unity2021PatchInfo;
                     break;
             }
+            il2cppVersionType = versionType;
 
             try
             {
@@ -154,7 +160,7 @@ namespace SCPSL_ModPatch
                 if (ex is FileIsProtectedException)
                 {
                     DialogResult userChoice = MessageBox.Show("Looks like GameAssembly.dll is virtualized by protector (most likely Themida).\r\n" +
-                        "Do you want to try to unpack GameAssembly.dll by unpacker?", "Question", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                        "Do you want to try to unpack GameAssembly.dll by unpacker?", "Question", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                     if (userChoice == DialogResult.No)
                     {
                         return;
@@ -166,6 +172,17 @@ namespace SCPSL_ModPatch
                         return;
                     }
                     StartThemidaUnpackerProcess(unpackerPath, gameAssemblyPath);
+
+                    string unpackerFolder = GetParentFolderFromFilePath(unpackerPath);
+                    string unpackedGameAssemblyPath = @$"{unpackerFolder}\unpacked_GameAssembly.dll";
+                    if (!File.Exists(unpackedGameAssemblyPath))
+                    {
+                        MessageBox.Show("Unpacked file doesn't exist. Try to unpack GameAssembly.dll again.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    File.Delete(gameAssemblyPath);
+                    File.Move(unpackedGameAssemblyPath, gameAssemblyPath);
+
                     MessageBox.Show("Please start IL2CPP loading again.", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
@@ -198,7 +215,20 @@ namespace SCPSL_ModPatch
                 Directory.Delete(IL2CPP_FOLDER, true);
             }
 
-            ChangeVersionTextBoxLines(1, GetGameVersion(scriptJson, patchInfo, GameAssembly).ToString());
+            string gameVersion = string.Empty;
+            try
+            {
+                gameVersion = GetGameVersion(scriptJson, patchInfo, GameAssembly).ToString();
+            }
+            catch (Exception ex)
+            {
+                if (ex is GameVersionNotFoundException)
+                {
+                    gameVersion = "Game version is not found in scripts";
+                    gameVersionIsNotInScripts = true;
+                }
+            }
+            ChangeVersionTextBoxLines(1, gameVersion);
         }
 
         private void StartThemidaUnpackerProcess(string unpackerPath, string gameAssemblyPath)
@@ -209,11 +239,6 @@ namespace SCPSL_ModPatch
             unpacker.Start();
             unpacker.WaitForExit();
             unpacker.Close();
-
-            string unpackerFolder = GetParentFolderFromFilePath(unpackerPath);
-            string unpackedGameAssemblyPath = @$"{unpackerFolder}\unpacked_GameAssembly.dll";
-            File.Delete(gameAssemblyPath);
-            File.Move(unpackedGameAssemblyPath, gameAssemblyPath);
         }
 
         private string GetParentFolderFromFilePath(string filePath)
@@ -251,6 +276,8 @@ namespace SCPSL_ModPatch
                 return;
             }
 
+            CheckVersionType(il2cppVersionType, versionType);
+
             PatchGameAssembly(scriptJson, patchInfo, GameAssembly, gameAssemblyPath);
 
             GC.Collect();
@@ -273,6 +300,11 @@ namespace SCPSL_ModPatch
             {
                 MethodInfo method = patchInfo.methods[i];
                 int functionOffset = GetOffsetFromFuncName(method.name, scriptJson);
+                if (functionOffset < 0)
+                {
+                    MessageBox.Show($"Couldn't patch ({method.name}) function", "Warning",  MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
                 gameAssemblyData = PatchFunction(gameAssemblyData, functionOffset, method.instructionOffset, method.newInstruction, method.instructionSize);
             }
 
@@ -303,6 +335,10 @@ namespace SCPSL_ModPatch
         private GameVersion GetGameVersion(ScriptJson scriptJson, PatchInfo patchInfo, List<byte> data)
         {
             int gameVersionOffset = GetOffsetFromFuncName(patchInfo.gameVersionMethod.name, scriptJson);
+            if (gameVersionOffset < 0)
+            {
+                throw new GameVersionNotFoundException();
+            }
             GameVersion gameVersion = new GameVersion(
                 data[gameVersionOffset + patchInfo.gameVersionMethod.majorOffset],
                 data[gameVersionOffset + patchInfo.gameVersionMethod.minorOffset],
@@ -341,6 +377,15 @@ namespace SCPSL_ModPatch
                 return;
             }
 
+            if (gameVersionIsNotInScripts)
+            {
+                MessageBox.Show("Game version is not found in scripts.\r\n" +
+                    "Try to check game version data in \"global-metadata.dat\".", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            CheckVersionType(il2cppVersionType, versionType);
+
             config = SettingsForm.GetConfiguration(CONFIG_FILENAME);
             string gamePath = config.GameFolder_Path;
             string gameAssemblyPath = @$"{gamePath}\GameAssembly.dll";
@@ -356,6 +401,37 @@ namespace SCPSL_ModPatch
             GameAssembly = ChangeGameVersion(scriptJson, patchInfo, GameAssembly, changeVersionForm.version);
             ChangeVersionTextBoxLines(1, changeVersionForm.version.ToString());
             SaveGameAssembly(gameAssemblyPath, GameAssembly);
+        }
+
+        private void CheckVersionType(VersionType il2cppVersionType, VersionType versionType)
+        {
+            if (il2cppVersionType != versionType)
+            {
+                string versionTypeMessage = GetVersionTypeName(versionType);
+                string il2cppVersionTypeMessage = GetVersionTypeName(il2cppVersionType);
+
+                MessageBox.Show($"You've selected these versions ({versionTypeMessage}) but you've loaded IL2CPP for ({il2cppVersionTypeMessage}) versions.\r\n" +
+                    "Program will patch the game using version settings that have been selected for IL2CPP load, so if you want to patch the game for selected version " +
+                    "you need to load IL2CPP for new versions again.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private string GetVersionTypeName(VersionType versionType)
+        {
+            string versionTypeMessage = string.Empty;
+            switch (versionType)
+            {
+                case VersionType.beforeValidation:
+                    versionTypeMessage = beforeValidationRadioButton.Text;
+                    break;
+                case VersionType.afterValidation:
+                    versionTypeMessage = afterValidationRadioButton.Text;
+                    break;
+                case VersionType.unity2021:
+                    versionTypeMessage = unity2021RadioButton.Text;
+                    break;
+            }
+            return versionTypeMessage;
         }
     }
 }
