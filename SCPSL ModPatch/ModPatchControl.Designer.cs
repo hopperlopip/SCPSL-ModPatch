@@ -50,7 +50,7 @@
             openSettingsButton.Location = new Point(3, 2);
             openSettingsButton.Margin = new Padding(3, 2, 3, 2);
             openSettingsButton.Name = "openSettingsButton";
-            openSettingsButton.Size = new Size(500, 33);
+            openSettingsButton.Size = new Size(560, 33);
             openSettingsButton.TabIndex = 0;
             openSettingsButton.Text = "Open settings";
             openSettingsButton.UseVisualStyleBackColor = true;
@@ -59,10 +59,10 @@
             // patchButton
             // 
             patchButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            patchButton.Location = new Point(3, 315);
+            patchButton.Location = new Point(3, 314);
             patchButton.Margin = new Padding(3, 2, 3, 2);
             patchButton.Name = "patchButton";
-            patchButton.Size = new Size(500, 40);
+            patchButton.Size = new Size(560, 40);
             patchButton.TabIndex = 2;
             patchButton.Text = "Patch!";
             patchButton.UseVisualStyleBackColor = true;
@@ -76,7 +76,7 @@
             versionGroupBox.Margin = new Padding(3, 2, 3, 2);
             versionGroupBox.Name = "versionGroupBox";
             versionGroupBox.Padding = new Padding(3, 2, 3, 2);
-            versionGroupBox.Size = new Size(500, 100);
+            versionGroupBox.Size = new Size(560, 100);
             versionGroupBox.TabIndex = 2;
             versionGroupBox.TabStop = false;
             versionGroupBox.Text = "Game version";
@@ -87,10 +87,10 @@
             radioPanel.Controls.Add(afterValidationRadioButton);
             radioPanel.Controls.Add(beforeValidationRadioButton);
             radioPanel.Dock = DockStyle.Fill;
-            radioPanel.Location = new Point(3, 18);
+            radioPanel.Location = new Point(3, 22);
             radioPanel.Margin = new Padding(3, 2, 3, 2);
             radioPanel.Name = "radioPanel";
-            radioPanel.Size = new Size(494, 80);
+            radioPanel.Size = new Size(554, 76);
             radioPanel.TabIndex = 3;
             // 
             // unity2021RadioButton
@@ -99,10 +99,10 @@
             unity2021RadioButton.AutoSize = true;
             unity2021RadioButton.Checked = true;
             unity2021RadioButton.Dock = DockStyle.Top;
-            unity2021RadioButton.Location = new Point(0, 50);
+            unity2021RadioButton.Location = new Point(0, 60);
             unity2021RadioButton.Margin = new Padding(3, 2, 3, 2);
             unity2021RadioButton.Name = "unity2021RadioButton";
-            unity2021RadioButton.Size = new Size(494, 25);
+            unity2021RadioButton.Size = new Size(554, 30);
             unity2021RadioButton.TabIndex = 2;
             unity2021RadioButton.TabStop = true;
             unity2021RadioButton.Text = "13.0.0 – Current";
@@ -114,10 +114,10 @@
             afterValidationRadioButton.Appearance = Appearance.Button;
             afterValidationRadioButton.AutoSize = true;
             afterValidationRadioButton.Dock = DockStyle.Top;
-            afterValidationRadioButton.Location = new Point(0, 25);
+            afterValidationRadioButton.Location = new Point(0, 30);
             afterValidationRadioButton.Margin = new Padding(3, 2, 3, 2);
             afterValidationRadioButton.Name = "afterValidationRadioButton";
-            afterValidationRadioButton.Size = new Size(494, 25);
+            afterValidationRadioButton.Size = new Size(554, 30);
             afterValidationRadioButton.TabIndex = 1;
             afterValidationRadioButton.Text = "11.1.5 – 12.0.2";
             afterValidationRadioButton.TextAlign = ContentAlignment.MiddleCenter;
@@ -131,7 +131,7 @@
             beforeValidationRadioButton.Location = new Point(0, 0);
             beforeValidationRadioButton.Margin = new Padding(3, 2, 3, 2);
             beforeValidationRadioButton.Name = "beforeValidationRadioButton";
-            beforeValidationRadioButton.Size = new Size(494, 25);
+            beforeValidationRadioButton.Size = new Size(554, 30);
             beforeValidationRadioButton.TabIndex = 0;
             beforeValidationRadioButton.Text = "10.1.0 – 11.1.4";
             beforeValidationRadioButton.TextAlign = ContentAlignment.MiddleCenter;
@@ -140,10 +140,10 @@
             // il2cppButton
             // 
             il2cppButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            il2cppButton.Location = new Point(3, 271);
+            il2cppButton.Location = new Point(3, 270);
             il2cppButton.Margin = new Padding(3, 2, 3, 2);
             il2cppButton.Name = "il2cppButton";
-            il2cppButton.Size = new Size(500, 40);
+            il2cppButton.Size = new Size(560, 40);
             il2cppButton.TabIndex = 1;
             il2cppButton.Text = "Load IL2CPP";
             il2cppButton.UseVisualStyleBackColor = true;
@@ -158,7 +158,7 @@
             versionChangerBox.Margin = new Padding(3, 2, 3, 2);
             versionChangerBox.Name = "versionChangerBox";
             versionChangerBox.Padding = new Padding(3, 2, 3, 2);
-            versionChangerBox.Size = new Size(499, 122);
+            versionChangerBox.Size = new Size(559, 122);
             versionChangerBox.TabIndex = 4;
             versionChangerBox.TabStop = false;
             versionChangerBox.Text = "Version Changer";
@@ -169,7 +169,7 @@
             changeVersionButton.Location = new Point(5, 75);
             changeVersionButton.Margin = new Padding(3, 2, 3, 2);
             changeVersionButton.Name = "changeVersionButton";
-            changeVersionButton.Size = new Size(489, 42);
+            changeVersionButton.Size = new Size(549, 42);
             changeVersionButton.TabIndex = 3;
             changeVersionButton.Text = "Change version";
             changeVersionButton.UseVisualStyleBackColor = true;
@@ -186,7 +186,7 @@
             versionTextBox.Multiline = true;
             versionTextBox.Name = "versionTextBox";
             versionTextBox.ReadOnly = true;
-            versionTextBox.Size = new Size(489, 46);
+            versionTextBox.Size = new Size(549, 46);
             versionTextBox.TabIndex = 1;
             versionTextBox.Text = "Game version:\r\nN/A";
             versionTextBox.TextAlign = HorizontalAlignment.Center;
@@ -201,7 +201,7 @@
             Controls.Add(openSettingsButton);
             Margin = new Padding(3, 2, 3, 2);
             Name = "ModPatchControl";
-            Size = new Size(505, 357);
+            Size = new Size(565, 356);
             versionGroupBox.ResumeLayout(false);
             radioPanel.ResumeLayout(false);
             radioPanel.PerformLayout();
