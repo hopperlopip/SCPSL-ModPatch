@@ -35,20 +35,21 @@
             // modPatchControl1
             // 
             modPatchControl1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            modPatchControl1.Location = new Point(12, 12);
-            modPatchControl1.MinimumSize = new Size(0, 289);
+            modPatchControl1.Location = new Point(12, 11);
+            modPatchControl1.Margin = new Padding(3, 2, 3, 2);
             modPatchControl1.Name = "modPatchControl1";
-            modPatchControl1.Size = new Size(587, 461);
+            modPatchControl1.Size = new Size(496, 357);
             modPatchControl1.TabIndex = 0;
             // 
             // MainForm
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
-            AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(611, 485);
+            AutoScaleDimensions = new SizeF(96F, 96F);
+            AutoScaleMode = AutoScaleMode.Dpi;
+            ClientSize = new Size(520, 379);
             Controls.Add(modPatchControl1);
             Icon = (Icon)resources.GetObject("$this.Icon");
-            MinimumSize = new Size(0, 532);
+            Margin = new Padding(3, 2, 3, 2);
+            MinimumSize = new Size(202, 418);
             Name = "MainForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "SCPSL ModPatch";

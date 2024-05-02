@@ -42,9 +42,10 @@
             // ApplyButton
             // 
             ApplyButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            ApplyButton.Location = new Point(12, 146);
+            ApplyButton.Location = new Point(10, 118);
+            ApplyButton.Margin = new Padding(3, 2, 3, 2);
             ApplyButton.Name = "ApplyButton";
-            ApplyButton.Size = new Size(485, 43);
+            ApplyButton.Size = new Size(426, 32);
             ApplyButton.TabIndex = 0;
             ApplyButton.Text = "Apply settings";
             ApplyButton.UseVisualStyleBackColor = true;
@@ -58,27 +59,31 @@
             // 
             GamePathGroupBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             GamePathGroupBox.Controls.Add(gamePathTextBox);
-            GamePathGroupBox.Location = new Point(12, 12);
+            GamePathGroupBox.Location = new Point(10, 9);
+            GamePathGroupBox.Margin = new Padding(3, 2, 3, 2);
             GamePathGroupBox.Name = "GamePathGroupBox";
-            GamePathGroupBox.Size = new Size(485, 57);
+            GamePathGroupBox.Padding = new Padding(3, 2, 3, 2);
+            GamePathGroupBox.Size = new Size(426, 48);
             GamePathGroupBox.TabIndex = 2;
             GamePathGroupBox.TabStop = false;
             GamePathGroupBox.Text = "Game Path";
             // 
             // gamePathTextBox
             // 
-            gamePathTextBox.Dock = DockStyle.Fill;
-            gamePathTextBox.Location = new Point(3, 23);
+            gamePathTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            gamePathTextBox.Location = new Point(3, 18);
+            gamePathTextBox.Margin = new Padding(3, 2, 3, 2);
             gamePathTextBox.Name = "gamePathTextBox";
-            gamePathTextBox.Size = new Size(479, 27);
+            gamePathTextBox.Size = new Size(420, 23);
             gamePathTextBox.TabIndex = 0;
             // 
             // resetButton
             // 
             resetButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            resetButton.Location = new Point(12, 195);
+            resetButton.Location = new Point(10, 154);
+            resetButton.Margin = new Padding(3, 2, 3, 2);
             resetButton.Name = "resetButton";
-            resetButton.Size = new Size(485, 43);
+            resetButton.Size = new Size(426, 32);
             resetButton.TabIndex = 3;
             resetButton.Text = "Reset Settings";
             resetButton.UseVisualStyleBackColor = true;
@@ -88,9 +93,11 @@
             // 
             UnlicenseGroupBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             UnlicenseGroupBox.Controls.Add(unlicenseTextBox);
-            UnlicenseGroupBox.Location = new Point(12, 75);
+            UnlicenseGroupBox.Location = new Point(10, 61);
+            UnlicenseGroupBox.Margin = new Padding(3, 2, 3, 2);
             UnlicenseGroupBox.Name = "UnlicenseGroupBox";
-            UnlicenseGroupBox.Size = new Size(485, 61);
+            UnlicenseGroupBox.Padding = new Padding(3, 2, 3, 2);
+            UnlicenseGroupBox.Size = new Size(426, 50);
             UnlicenseGroupBox.TabIndex = 4;
             UnlicenseGroupBox.TabStop = false;
             UnlicenseGroupBox.Text = "Unlicense Path (Themida unpacker)";
@@ -98,21 +105,23 @@
             // unlicenseTextBox
             // 
             unlicenseTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            unlicenseTextBox.Location = new Point(6, 26);
+            unlicenseTextBox.Location = new Point(5, 20);
+            unlicenseTextBox.Margin = new Padding(3, 2, 3, 2);
             unlicenseTextBox.Name = "unlicenseTextBox";
-            unlicenseTextBox.Size = new Size(473, 27);
+            unlicenseTextBox.Size = new Size(416, 23);
             unlicenseTextBox.TabIndex = 0;
             // 
             // SettingsForm
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
-            AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(509, 250);
+            AutoScaleDimensions = new SizeF(96F, 96F);
+            AutoScaleMode = AutoScaleMode.Dpi;
+            ClientSize = new Size(447, 202);
             Controls.Add(UnlicenseGroupBox);
             Controls.Add(resetButton);
             Controls.Add(ApplyButton);
             Controls.Add(GamePathGroupBox);
-            MinimumSize = new Size(0, 297);
+            Margin = new Padding(3, 2, 3, 2);
+            MinimumSize = new Size(247, 241);
             Name = "SettingsForm";
             ShowIcon = false;
             StartPosition = FormStartPosition.CenterParent;
