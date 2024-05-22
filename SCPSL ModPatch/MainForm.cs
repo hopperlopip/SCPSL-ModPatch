@@ -422,7 +422,8 @@ namespace SCPSL_ModPatch
             }
 
             GameAssembly = ChangeGameVersion(scriptJson, patchInfo, GameAssembly, changeVersionForm.version);
-            ChangeVersionTextBoxLines(1, changeVersionForm.version.ToString());
+            gameVersion = changeVersionForm.version;
+            ChangeVersionTextBoxLines(1, gameVersion.ToString());
             SaveGameAssembly(gameAssemblyPath, GameAssembly);
         }
 
