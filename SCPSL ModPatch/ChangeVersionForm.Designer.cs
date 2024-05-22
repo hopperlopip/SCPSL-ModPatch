@@ -30,11 +30,13 @@
         {
             changeButton = new Button();
             versionTextBox = new MaskedTextBox();
+            versionTypeBox = new ComboBox();
             SuspendLayout();
             // 
             // changeButton
             // 
-            changeButton.Location = new Point(12, 45);
+            changeButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            changeButton.Location = new Point(12, 83);
             changeButton.Name = "changeButton";
             changeButton.Size = new Size(519, 52);
             changeButton.TabIndex = 0;
@@ -51,11 +53,25 @@
             versionTextBox.Size = new Size(519, 27);
             versionTextBox.TabIndex = 1;
             // 
+            // versionTypeBox
+            // 
+            versionTypeBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            versionTypeBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            versionTypeBox.FormattingEnabled = true;
+            versionTypeBox.Items.AddRange(new object[] { "Release", "PublicRC", "PublicBeta", "PrivateRC", "PrivateRCStreamingForbidden", "PrivateBeta", "PrivateBetaStreamingForbidden", "Development", "Nightly" });
+            versionTypeBox.Location = new Point(12, 45);
+            versionTypeBox.MaxDropDownItems = 9;
+            versionTypeBox.Name = "versionTypeBox";
+            versionTypeBox.Size = new Size(519, 28);
+            versionTypeBox.TabIndex = 10;
+            versionTypeBox.SelectedIndexChanged += versionTypeBox_SelectedIndexChanged;
+            // 
             // ChangeVersionForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(543, 110);
+            ClientSize = new Size(543, 148);
+            Controls.Add(versionTypeBox);
             Controls.Add(versionTextBox);
             Controls.Add(changeButton);
             FormBorderStyle = FormBorderStyle.FixedSingle;
@@ -72,5 +88,6 @@
 
         private Button changeButton;
         private MaskedTextBox versionTextBox;
+        private ComboBox versionTypeBox;
     }
 }

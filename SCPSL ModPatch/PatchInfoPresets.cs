@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SCPSL_ModPatch
 {
-    public class PatchInfos
+    public class PatchInfoPresets
     {
         const byte NOP = 144;
         const byte RET = 195;
@@ -14,7 +14,7 @@ namespace SCPSL_ModPatch
         public PatchInfo afterValidationPatchInfo = new PatchInfo();
         public PatchInfo unity2021PatchInfo = new PatchInfo();
 
-        public PatchInfos()
+        public PatchInfoPresets()
         {
             ////////// 1
             beforeValidationPatchInfo.methods.Add(new MethodInfo("LauncherCommunicator$$GetNativeDelegate<object>", 145, NOP, 3));
@@ -25,6 +25,7 @@ namespace SCPSL_ModPatch
             beforeValidationPatchInfo.gameVersionMethod.majorOffset = 52;
             beforeValidationPatchInfo.gameVersionMethod.minorOffset = 70;
             beforeValidationPatchInfo.gameVersionMethod.patchOffset = 88;
+            beforeValidationPatchInfo.gameVersionMethod.typeOffset = 106;
 
             ////////// 2
             afterValidationPatchInfo.methods.Add(new MethodInfo("LauncherCommunicator$$GetNativeDelegate<object>", 145, NOP, 3));
@@ -37,6 +38,7 @@ namespace SCPSL_ModPatch
             afterValidationPatchInfo.gameVersionMethod.majorOffset = 52;
             afterValidationPatchInfo.gameVersionMethod.minorOffset = 70;
             afterValidationPatchInfo.gameVersionMethod.patchOffset = 88;
+            afterValidationPatchInfo.gameVersionMethod.typeOffset = 106;
 
             ////////// 3
             unity2021PatchInfo.methods.Add(new MethodInfo("LauncherCommunicator$$GetNativeDelegate<object>", 140, NOP, 3));
@@ -49,6 +51,7 @@ namespace SCPSL_ModPatch
             unity2021PatchInfo.gameVersionMethod.majorOffset = 125;
             unity2021PatchInfo.gameVersionMethod.minorOffset = 143;
             unity2021PatchInfo.gameVersionMethod.patchOffset = 161;
+            unity2021PatchInfo.gameVersionMethod.typeOffset = 197;
         }
     }
 }

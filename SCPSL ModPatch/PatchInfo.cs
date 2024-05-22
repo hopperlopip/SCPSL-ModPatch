@@ -35,6 +35,7 @@ namespace SCPSL_ModPatch
         public int majorOffset;
         public int minorOffset;
         public int patchOffset;
+        public int typeOffset;
 
         public GameVersionMethodInfo()
         {
@@ -43,12 +44,13 @@ namespace SCPSL_ModPatch
             patchOffset = 0;
         }
 
-        public GameVersionMethodInfo(string name, int majorOffset, int minorOffset, int patchOffset)
+        public GameVersionMethodInfo(string name, int majorOffset, int minorOffset, int patchOffset, int typeOffset)
         {
             this.name = name;
             this.majorOffset = majorOffset;
             this.minorOffset = minorOffset;
             this.patchOffset = patchOffset;
+            this.typeOffset = typeOffset;
         }
     }
 }

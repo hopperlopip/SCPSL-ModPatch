@@ -20,13 +20,14 @@ namespace SCPSL_ModPatch
             InitializeComponent();
             this.version = version;
             versionTextBox.Text = version.ToString();
+            versionTypeBox.SelectedIndex = (byte)version.type;
         }
 
         private void changeButton_Click(object sender, EventArgs e)
         {
             try
             {
-                version = new GameVersion(versionTextBox.Text);
+                version = new GameVersion(versionTextBox.Text, version.type);
             }
             catch (Exception ex)
             {
@@ -37,6 +38,9 @@ namespace SCPSL_ModPatch
             Close();
         }
 
-
+        private void versionTypeBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            version.type = (GameVersion.VersionType)versionTypeBox.SelectedIndex;
+        }
     }
 }

@@ -11,15 +11,17 @@ namespace SCPSL_ModPatch
         public byte major = 0;
         public byte minor = 0;
         public byte patch = 0;
+        public VersionType type = 0;
 
-        public GameVersion(byte major, byte minor, byte patch)
+        public GameVersion(byte major, byte minor, byte patch, byte type)
         {
             this.major = major;
             this.minor = minor;
             this.patch = patch;
+            this.type = (VersionType)type;
         }
 
-        public GameVersion(string versionStr, char separator = '.')
+        public GameVersion(string versionStr, VersionType type, char separator = '.')
         {
             string[] version = versionStr.Split(separator);
             if (version.Length != 3)
@@ -38,11 +40,25 @@ namespace SCPSL_ModPatch
             {
                 throw new Exception("Invalid patch number. Value must be from 0 to 255.");
             }
+            this.type = type;
         }
 
         public override string ToString()
         {
             return $"{major}.{minor}.{patch}";
+        }
+
+        public enum VersionType : byte
+        {
+            Release,
+            PublicRC,
+            PublicBeta,
+            PrivateRC,
+            PrivateRCStreamingForbidden,
+            PrivateBeta,
+            PrivateBetaStreamingForbidden,
+            Development,
+            Nightly
         }
     }
 }
