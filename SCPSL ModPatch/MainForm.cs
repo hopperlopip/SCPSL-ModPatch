@@ -92,6 +92,7 @@ namespace SCPSL_ModPatch
             il2cppButton.Enabled = false;
             var initButtonText = il2cppButton.Text;
             il2cppButton.Text = "Loading IL2CPP...";
+            this.il2Cpp = null;
             Il2Cpp? il2Cpp = null;
             GameVersion? gameVersion = null;
             ChangeVersionTextBoxLines(1, defaultGameVersionString);
@@ -169,6 +170,7 @@ namespace SCPSL_ModPatch
             }
             catch (Exception ex)
             {
+                il2Cpp = null;
                 if (ex is FileIsProtectedException)
                 {
                     DialogResult userChoice = MessageBox.Show("Looks like GameAssembly.dll is virtualized by protector (most likely Themida).\r\n" +
