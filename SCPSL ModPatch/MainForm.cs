@@ -95,8 +95,9 @@ namespace SCPSL_ModPatch
             this.il2Cpp = null;
             Il2Cpp? il2Cpp = null;
             GameVersion? gameVersion = null;
+            config = SettingsForm.GetConfiguration(CONFIG_FILENAME);
             ChangeVersionTextBoxLines(1, defaultGameVersionString);
-            await Task.Run(() => LoadIL2CPP(out il2Cpp, out gameVersion));
+            await Task.Run(() => LoadIL2CPP(out il2Cpp, out gameVersion, config));
             //Task.CompletedTask.Dispose();
             if (gameVersion != null)
             {
@@ -110,9 +111,8 @@ namespace SCPSL_ModPatch
             il2cppButton.Enabled = true;
         }
 
-        private void LoadIL2CPP(out Il2Cpp? il2Cpp, out GameVersion? gameVersion)
+        private void LoadIL2CPP(out Il2Cpp? il2Cpp, out GameVersion? gameVersion, ConfigurationClass config)
         {
-            config = SettingsForm.GetConfiguration(CONFIG_FILENAME);
             string gamePath = config.GameFolder_Path;
             string gameAssemblyPath = @$"{gamePath}\GameAssembly.dll";
             string metadataPath = @$"{gamePath}\SCPSL_Data\il2cpp_data\Metadata\global-metadata.dat";
