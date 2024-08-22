@@ -58,7 +58,6 @@
             versionTypeBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             versionTypeBox.DropDownStyle = ComboBoxStyle.DropDownList;
             versionTypeBox.FormattingEnabled = true;
-            versionTypeBox.Items.AddRange(new object[] { "Release", "PublicRC", "PublicBeta", "PrivateRC", "PrivateRCStreamingForbidden", "PrivateBeta", "PrivateBetaStreamingForbidden", "Development", "Nightly" });
             versionTypeBox.Location = new Point(12, 45);
             versionTypeBox.MaxDropDownItems = 9;
             versionTypeBox.Name = "versionTypeBox";
@@ -68,8 +67,8 @@
             // 
             // ChangeVersionForm
             // 
-            AutoScaleDimensions = new SizeF(8F, 20F);
-            AutoScaleMode = AutoScaleMode.Font;
+            AutoScaleDimensions = new SizeF(120F, 120F);
+            AutoScaleMode = AutoScaleMode.Dpi;
             ClientSize = new Size(543, 148);
             Controls.Add(versionTypeBox);
             Controls.Add(versionTextBox);

@@ -20,7 +20,6 @@ namespace SCPSL_ModPatch
         VersionType il2cppVersionType;
 
         Il2Cpp? il2Cpp = null;
-        Metadata? metadata = null;
         ScriptJson scriptJson;
         PatchInfo patchInfo;
         GameVersion gameVersion;
@@ -88,7 +87,29 @@ namespace SCPSL_ModPatch
             File.WriteAllBytes(metadataPath, metadataData.ToArray());
         }
 
-        private void il2cppButton_Click(object sender, EventArgs e)
+        private async void il2cppButton_Click(object sender, EventArgs e)
+        {
+            il2cppButton.Enabled = false;
+            var initButtonText = il2cppButton.Text;
+            il2cppButton.Text = "Loading IL2CPP...";
+            Il2Cpp? il2Cpp = null;
+            GameVersion? gameVersion = null;
+            ChangeVersionTextBoxLines(1, defaultGameVersionString);
+            await Task.Run(() => LoadIL2CPP(out il2Cpp, out gameVersion));
+            //Task.CompletedTask.Dispose();
+            if (gameVersion != null)
+            {
+                ChangeVersionTextBoxLines(1, ((GameVersion)gameVersion).ToString());
+                this.gameVersion = (GameVersion)gameVersion;
+            }
+            else if (il2Cpp != null)
+                ChangeVersionTextBoxLines(1, "Game version is not found in GameAssembly.dll");
+            this.il2Cpp = il2Cpp;
+            il2cppButton.Text = initButtonText;
+            il2cppButton.Enabled = true;
+        }
+
+        private void LoadIL2CPP(out Il2Cpp? il2Cpp, out GameVersion? gameVersion)
         {
             config = SettingsForm.GetConfiguration(CONFIG_FILENAME);
             string gamePath = config.GameFolder_Path;
@@ -97,8 +118,8 @@ namespace SCPSL_ModPatch
             string scriptPath = @$"{IL2CPP_FOLDER}\script.json";
 
             il2Cpp = null;
-            metadata = null;
-            ChangeVersionTextBoxLines(1, defaultGameVersionString);
+            Metadata? metadata = null;
+            gameVersion = null;
 
             if (string.IsNullOrEmpty(gamePath) || !Directory.Exists(gamePath))
             {
@@ -205,22 +226,17 @@ namespace SCPSL_ModPatch
             {
                 Directory.Delete(IL2CPP_FOLDER, true);
             }
-
-            string gameVersionStr = string.Empty;
             try
             {
-                gameVersion = GetGameVersion(scriptJson, patchInfo, GameAssembly);
-                gameVersionStr = gameVersion.ToString();
+                gameVersion = GetGameVersion(il2Cpp, scriptJson, patchInfo, GameAssembly);
             }
             catch (Exception ex)
             {
                 if (ex is GameVersionNotFoundException)
                 {
-                    gameVersionStr = "Game version is not found in GameAssembly.dll";
                     patchInfo.gameVersionMethod.methodNotFound = true;
                 }
             }
-            ChangeVersionTextBoxLines(1, gameVersionStr);
         }
 
         private void StartThemidaUnpackerProcess(string unpackerPath, string gameAssemblyPath)
@@ -273,7 +289,7 @@ namespace SCPSL_ModPatch
                 return;
             }
 
-            PatchGameAssembly(scriptJson, patchInfo, GameAssembly, gameAssemblyPath);
+            PatchGameAssembly(il2Cpp, scriptJson, patchInfo, GameAssembly, gameAssemblyPath);
             LauncherReplacer(gamePath, LAUNCHERS_FOLDER);
 
             GC.Collect();
@@ -312,12 +328,12 @@ namespace SCPSL_ModPatch
             return scriptJson;
         }
 
-        private void PatchGameAssembly(ScriptJson scriptJson, PatchInfo patchInfo, List<byte> gameAssemblyData, string gameAssemblyPath)
+        private void PatchGameAssembly(Il2Cpp il2Cpp, ScriptJson scriptJson, PatchInfo patchInfo, List<byte> gameAssemblyData, string gameAssemblyPath)
         {
             for (int i = 0; i < patchInfo.methods.Count; i++)
             {
                 MethodInfo method = patchInfo.methods[i];
-                int functionOffset = GetOffsetFromFuncName(method.name, scriptJson);
+                int functionOffset = GetOffsetFromFuncName(il2Cpp, method.name, scriptJson);
                 if (functionOffset < 0)
                 {
                     MessageBox.Show($"Couldn't patch ({method.name}) function", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -350,9 +366,9 @@ namespace SCPSL_ModPatch
             return gameAssemblyData;
         }
 
-        private GameVersion GetGameVersion(ScriptJson scriptJson, PatchInfo patchInfo, List<byte> data)
+        private GameVersion GetGameVersion(Il2Cpp il2Cpp, ScriptJson scriptJson, PatchInfo patchInfo, List<byte> data)
         {
-            int gameVersionOffset = GetOffsetFromFuncName(patchInfo.gameVersionMethod.name, scriptJson);
+            int gameVersionOffset = GetOffsetFromFuncName(il2Cpp, patchInfo.gameVersionMethod.name, scriptJson);
             if (gameVersionOffset < 0)
             {
                 throw new GameVersionNotFoundException();
@@ -365,9 +381,9 @@ namespace SCPSL_ModPatch
             return gameVersion;
         }
 
-        private List<byte> ChangeGameVersion(ScriptJson scriptJson, PatchInfo patchInfo, List<byte> data, GameVersion version)
+        private List<byte> ChangeGameVersion(Il2Cpp il2Cpp, ScriptJson scriptJson, PatchInfo patchInfo, List<byte> data, GameVersion version)
         {
-            int gameVersionOffset = GetOffsetFromFuncName(patchInfo.gameVersionMethod.name, scriptJson);
+            int gameVersionOffset = GetOffsetFromFuncName(il2Cpp, patchInfo.gameVersionMethod.name, scriptJson);
             data[gameVersionOffset + patchInfo.gameVersionMethod.majorOffset] = version.major;
             data[gameVersionOffset + patchInfo.gameVersionMethod.minorOffset] = version.minor;
             data[gameVersionOffset + patchInfo.gameVersionMethod.patchOffset] = version.patch;
@@ -375,7 +391,7 @@ namespace SCPSL_ModPatch
             return data;
         }
 
-        private int GetOffsetFromFuncName(string functionName, ScriptJson scriptJson)
+        private int GetOffsetFromFuncName(Il2Cpp il2Cpp, string functionName, ScriptJson scriptJson)
         {
             for (int i = 0; i < scriptJson.ScriptMethod.Count; i++)
             {
@@ -415,13 +431,14 @@ namespace SCPSL_ModPatch
 
             ChangeVersionForm changeVersionForm = new ChangeVersionForm(gameVersion);
             changeVersionForm.ShowDialog();
+            changeVersionForm.Dispose();
 
             if (!changeVersionForm.versionChanged)
             {
                 return;
             }
 
-            GameAssembly = ChangeGameVersion(scriptJson, patchInfo, GameAssembly, changeVersionForm.version);
+            GameAssembly = ChangeGameVersion(il2Cpp, scriptJson, patchInfo, GameAssembly, changeVersionForm.version);
             gameVersion = changeVersionForm.version;
             ChangeVersionTextBoxLines(1, gameVersion.ToString());
             SaveGameAssembly(gameAssemblyPath, GameAssembly);

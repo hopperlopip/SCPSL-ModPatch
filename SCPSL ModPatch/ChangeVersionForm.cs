@@ -18,6 +18,7 @@ namespace SCPSL_ModPatch
         public ChangeVersionForm(GameVersion version)
         {
             InitializeComponent();
+            versionTypeBox.Items.AddRange(Enum.GetNames(typeof(GameVersion.VersionType)));
             this.version = version;
             versionTextBox.Text = version.ToString();
             versionTypeBox.SelectedIndex = (byte)version.type;

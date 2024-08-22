@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SCPSL_ModPatch
 {
-    public class GameVersion
+    public struct GameVersion
     {
         public byte major = 0;
         public byte minor = 0;
