@@ -36,9 +36,10 @@
             // changeButton
             // 
             changeButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            changeButton.Location = new Point(12, 83);
+            changeButton.Location = new Point(11, 68);
+            changeButton.Margin = new Padding(2, 2, 2, 2);
             changeButton.Name = "changeButton";
-            changeButton.Size = new Size(519, 52);
+            changeButton.Size = new Size(386, 42);
             changeButton.TabIndex = 0;
             changeButton.Text = "Change version";
             changeButton.UseVisualStyleBackColor = true;
@@ -48,9 +49,10 @@
             // 
             versionTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             versionTextBox.Culture = new System.Globalization.CultureInfo("en-US");
-            versionTextBox.Location = new Point(12, 12);
+            versionTextBox.Location = new Point(11, 11);
+            versionTextBox.Margin = new Padding(2, 2, 2, 2);
             versionTextBox.Name = "versionTextBox";
-            versionTextBox.Size = new Size(519, 27);
+            versionTextBox.Size = new Size(386, 23);
             versionTextBox.TabIndex = 1;
             // 
             // versionTypeBox
@@ -58,22 +60,24 @@
             versionTypeBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             versionTypeBox.DropDownStyle = ComboBoxStyle.DropDownList;
             versionTypeBox.FormattingEnabled = true;
-            versionTypeBox.Location = new Point(12, 45);
+            versionTypeBox.Location = new Point(11, 38);
+            versionTypeBox.Margin = new Padding(2, 2, 2, 2);
             versionTypeBox.MaxDropDownItems = 9;
             versionTypeBox.Name = "versionTypeBox";
-            versionTypeBox.Size = new Size(519, 28);
+            versionTypeBox.Size = new Size(386, 23);
             versionTypeBox.TabIndex = 10;
             versionTypeBox.SelectedIndexChanged += versionTypeBox_SelectedIndexChanged;
             // 
             // ChangeVersionForm
             // 
-            AutoScaleDimensions = new SizeF(120F, 120F);
+            AutoScaleDimensions = new SizeF(96F, 96F);
             AutoScaleMode = AutoScaleMode.Dpi;
-            ClientSize = new Size(543, 148);
+            ClientSize = new Size(408, 121);
             Controls.Add(versionTypeBox);
             Controls.Add(versionTextBox);
             Controls.Add(changeButton);
             FormBorderStyle = FormBorderStyle.FixedSingle;
+            Margin = new Padding(2, 2, 2, 2);
             MaximizeBox = false;
             Name = "ChangeVersionForm";
             ShowIcon = false;

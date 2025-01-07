@@ -10,14 +10,14 @@ namespace SCPSL_ModPatch
     {
         public byte major = 0;
         public byte minor = 0;
-        public byte patch = 0;
+        public byte revision = 0;
         public VersionType type = 0;
 
-        public GameVersion(byte major, byte minor, byte patch, byte type)
+        public GameVersion(byte major, byte minor, byte revision, byte type)
         {
             this.major = major;
             this.minor = minor;
-            this.patch = patch;
+            this.revision = revision;
             this.type = (VersionType)type;
         }
 
@@ -36,16 +36,16 @@ namespace SCPSL_ModPatch
             {
                 throw new Exception("Invalid minor number. Value must be from 0 to 255.");
             }
-            if (!byte.TryParse(version[2], out patch))
+            if (!byte.TryParse(version[2], out revision))
             {
-                throw new Exception("Invalid patch number. Value must be from 0 to 255.");
+                throw new Exception("Invalid revision number. Value must be from 0 to 255.");
             }
             this.type = type;
         }
 
         public override string ToString()
         {
-            return $"{major}.{minor}.{patch}";
+            return $"{major}.{minor}.{revision}";
         }
 
         public enum VersionType : byte

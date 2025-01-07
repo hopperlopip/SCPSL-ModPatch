@@ -7,11 +7,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Il2CppDumper;
 
-namespace SCPSL_ModPatch
+namespace SCPSL_ModPatch.IL2Cpp
 {
     public class Il2CppDumperWorker
     {
-        public static bool Init(string il2cppPath, string metadataPath, out Metadata metadata, out Il2Cpp il2Cpp)
+        public static bool Init(string il2cppPath, string metadataPath, Config config, out Metadata metadata, out Il2Cpp il2Cpp)
         {
             Console.WriteLine("Initializing metadata...");
             var metadataBytes = File.ReadAllBytes(metadataPath);
@@ -73,10 +73,10 @@ namespace SCPSL_ModPatch
                     il2Cpp = new Macho(il2CppMemory);
                     break;
             }
-            var version = metadata.Version;
+            var version = config.ForceIl2CppVersion ? config.ForceVersion : metadata.Version;
             il2Cpp.SetProperties(version, metadata.metadataUsagesCount);
             Console.WriteLine($"Il2Cpp Version: {il2Cpp.Version}");
-            if (il2Cpp.CheckDump())
+            if (config.ForceDump || il2Cpp.CheckDump())
             {
                 if (il2Cpp is ElfBase elf)
                 {
@@ -87,7 +87,10 @@ namespace SCPSL_ModPatch
                     {
                         il2Cpp.ImageBase = DumpAddr;
                         il2Cpp.IsDumped = true;
-                        elf.Reload();
+                        if (!config.NoRedirectedPointer)
+                        {
+                            elf.Reload();
+                        }
                     }
                 }
                 else
@@ -135,12 +138,8 @@ namespace SCPSL_ModPatch
                     metadata.ImageBase = il2CppType.data.typeHandle - metadata.header.typeDefinitionsOffset;
                 }
             }
-            catch (Exception e)
+            catch (Exception e) when (e is not FileIsProtectedException)
             {
-                if (e is FileIsProtectedException)
-                {
-                    throw new FileIsProtectedException();
-                }
                 Console.WriteLine(e);
                 Console.WriteLine("ERROR: An error occurred while processing.");
                 return false;
