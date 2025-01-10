@@ -65,7 +65,7 @@ namespace SCPSL_ModPatch
             string patchInfoPath = PATCHINFO_FILENAME;
             if (!File.Exists(patchInfoPath))
             {
-                MessageBox.Show($"File \"{Path.GetFileName(patchInfoPath)}\" was not found.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show($"Patch info (\"{Path.GetFileName(patchInfoPath)}\") file was not found.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return new PatchInfo();
             }
             PatchInfo? patchInfo = JsonConvert.DeserializeObject<PatchInfo>(File.ReadAllText(patchInfoPath));
