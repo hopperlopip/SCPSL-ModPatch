@@ -64,23 +64,15 @@ namespace SCPSL_ModPatch.IL2Cpp
                 il2cppConfig.ForceVersion = metadataVersion.Value;
             }
 
-            bool il2CppInitSuccess = false;
-
             try
             {
-                il2CppInitSuccess = Il2CppDumperWorker.Init(gameAssemblyPath, metadataPath, il2cppConfig, out _metadata, out _il2Cpp);
+                Il2CppDumperWorker.Init(gameAssemblyPath, metadataPath, il2cppConfig, out _metadata, out _il2Cpp);
             }
             catch (Exception ex) when (ex is not FileIsProtectedException)
             {
                 _il2Cpp = null;
-                throw new NotRightMetadataVersionException("Loading IL2CPP end up failure.\r\n" +
+                throw new Il2cppInitException("Loading IL2CPP end up failure.\r\n" +
                     "Make sure you selected right version of the game.");
-            }
-
-            if (!il2CppInitSuccess)
-            {
-                _il2Cpp = null;
-                throw new Exception("Loading IL2CPP end up failure.");
             }
         }
 

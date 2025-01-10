@@ -110,7 +110,62 @@ namespace SCPSL_ModPatch.PatchUtils
         /// <param name="gamePath">Root game folder.</param>
         public void ReplaceLauncher(string gamePath)
         {
+            if (!IsPathValid(_versionRangeInfo.cleanLauncherPath))
+            {
+                MessageBox.Show("Invalid launcher path in the patch info.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (!File.Exists(_versionRangeInfo.cleanLauncherPath))
+            {
+                if (string.IsNullOrEmpty(_versionRangeInfo.cleanLauncherUrl))
+                    return;
+
+                DialogResult launcherDialogResult = MessageBox.Show("The native Unity launcher doesn't exist. " +
+                    "Without it you can't start the game without anti-cheat.\r\n" +
+                    "Would you like to download the launcher from the web?", "Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                if (launcherDialogResult == DialogResult.Yes)
+                {
+                    string cleanLauncherUrl = _versionRangeInfo.cleanLauncherUrl;
+                    string cleanLauncherPath = _versionRangeInfo.cleanLauncherPath;
+                    DownloadLauncher(cleanLauncherUrl, cleanLauncherPath);
+                    if (!File.Exists(_versionRangeInfo.cleanLauncherPath))
+                        return;
+                }
+                else
+                    return;
+            }
             ReplaceLauncher(gamePath, _versionRangeInfo.cleanLauncherPath);
+        }
+
+        /// <summary>
+        /// Downloads the clean launcher from the web.
+        /// </summary>
+        /// <param name="cleanLauncherUrl"></param>
+        /// <param name="cleanLauncherPath"></param>
+        private static void DownloadLauncher(string cleanLauncherUrl, string cleanLauncherPath)
+        {
+            cleanLauncherPath = Path.GetFullPath(cleanLauncherPath);
+            DownloadForm downloadForm = new DownloadForm(cleanLauncherUrl, cleanLauncherPath);
+            downloadForm.ShowDialog();
+        }
+
+        /// <summary>
+        /// Checks if the path is valid.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        private bool IsPathValid(string path)
+        {
+            try
+            {
+                path = Path.GetFullPath(path);
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
         }
 
         /// <summary>
