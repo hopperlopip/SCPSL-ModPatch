@@ -15,58 +15,64 @@ namespace SCPSL_ModPatch
     public partial class SettingsForm : Form
     {
         const string CONFIG_FILENAME = @".\config.json";
-        ConfigurationClass config;
+        Configuration _config;
 
         public SettingsForm()
         {
             InitializeComponent();
+            _config = GetConfiguration();
+            UpdateSettings();
+        }
+
+        public static Configuration GetConfiguration()
+        {
             if (!File.Exists(CONFIG_FILENAME))
-            {
-                File.WriteAllText(CONFIG_FILENAME, JsonConvert.SerializeObject(new ConfigurationClass(), Formatting.Indented));
-            }
-            config = GetConfiguration(CONFIG_FILENAME);
-            gamePathTextBox.Text = config.GameFolder_Path;
-            unlicenseTextBox.Text = config.Unlicense_Path;
+                return new Configuration();
+            return Configuration.GetConfiguration(CONFIG_FILENAME);
         }
 
-        public static ConfigurationClass GetConfiguration(string configPath)
+        public static void SaveConfiguration(Configuration config)
         {
-            if (!File.Exists(configPath))
-            {
-                return new ConfigurationClass();
-            }
-            string configJSON = File.ReadAllText(configPath);
-            ConfigurationClass? config = JsonConvert.DeserializeObject<ConfigurationClass>(configJSON);
-            if (config == null)
-            {
-                return new ConfigurationClass();
-            }
-            return config;
+            config.SaveConfiguration(CONFIG_FILENAME);
         }
 
-        private void SaveConfiguration(string configPath, ConfigurationClass config)
+        private void SaveConfiguration()
         {
-            config.GameFolder_Path = gamePathTextBox.Text;
-            config.Unlicense_Path = unlicenseTextBox.Text;
-            File.WriteAllText(configPath, JsonConvert.SerializeObject(config, Formatting.Indented));
+            SaveConfiguration(_config);
         }
 
-        private void ApplyButton_Click(object sender, EventArgs e)
+        private void UpdateSettings()
         {
-            SaveConfiguration(CONFIG_FILENAME, config);
+            gamePathTextBox.Text = _config.GameFolder_Path;
+            unlicenseTextBox.Text = _config.Unlicense_Path;
+            autoUpdatePatchInfoCheckBox.Checked = _config.AutoUpdatePatchInfo;
         }
 
-        private void UpdateTextBoxes(ConfigurationClass config)
+        private void ApplySettings()
         {
-            gamePathTextBox.Text = config.GameFolder_Path;
-            unlicenseTextBox.Text = config.Unlicense_Path;
+            _config.GameFolder_Path = gamePathTextBox.Text;
+            _config.Unlicense_Path = unlicenseTextBox.Text;
+            _config.AutoUpdatePatchInfo = autoUpdatePatchInfoCheckBox.Checked;
+
+            SaveConfiguration();
+        }
+
+        private void ResetSettings()
+        {
+            _config = new Configuration();
+            UpdateSettings();
+            SaveConfiguration();
+        }
+
+        private void applyButton_Click(object sender, EventArgs e)
+        {
+            ApplySettings();
+            Close();
         }
 
         private void resetButton_Click(object sender, EventArgs e)
         {
-            config = new ConfigurationClass();
-            UpdateTextBoxes(config);
-            SaveConfiguration(CONFIG_FILENAME, config);
+            ResetSettings();
         }
     }
 }

@@ -31,7 +31,7 @@ namespace SCPSL_ModPatch
             }
             StartThemidaUnpackerProcess();
 
-            string unpackerFolder = MainForm.GetParentFolderFromFilePath(_unpackerPath);
+            string unpackerFolder = Path.GetDirectoryName(_unpackerPath) ?? string.Empty;
             string unpackedGameAssemblyPath = @$"{unpackerFolder}\unpacked_GameAssembly.dll";
             if (!File.Exists(unpackedGameAssemblyPath))
             {

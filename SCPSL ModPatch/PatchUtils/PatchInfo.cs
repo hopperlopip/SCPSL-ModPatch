@@ -19,6 +19,7 @@ namespace SCPSL_ModPatch.PatchUtils
         public string versionTo = string.Empty;
 
         public string cleanLauncherPath = string.Empty;
+        public string? cleanLauncherUrl = string.Empty;
         public int metadataVersion;
         public MethodsInfo methods = new();
 

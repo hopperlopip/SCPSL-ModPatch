@@ -21,6 +21,10 @@ namespace SCPSL_ModPatch
             versionTypeBox.Items.AddRange(Enum.GetNames(typeof(GameVersion.VersionType)));
             this.version = version;
             versionTextBox.Text = version.ToString();
+            if ((byte)version.type >= versionTypeBox.Items.Count)
+            {
+                throw new ArgumentException("Invalid version type. Probably game version was not loaded properly.");
+            }
             versionTypeBox.SelectedIndex = (byte)version.type;
         }
 

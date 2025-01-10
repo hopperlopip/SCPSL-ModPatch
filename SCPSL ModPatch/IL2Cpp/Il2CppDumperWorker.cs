@@ -11,7 +11,7 @@ namespace SCPSL_ModPatch.IL2Cpp
 {
     public class Il2CppDumperWorker
     {
-        public static bool Init(string il2cppPath, string metadataPath, Config config, out Metadata metadata, out Il2Cpp il2Cpp)
+        public static void Init(string il2cppPath, string metadataPath, Config config, out Metadata metadata, out Il2Cpp il2Cpp)
         {
             Console.WriteLine("Initializing metadata...");
             var metadataBytes = File.ReadAllBytes(metadataPath);
@@ -100,51 +100,42 @@ namespace SCPSL_ModPatch.IL2Cpp
             }
 
             Console.WriteLine("Searching...");
-            try
+
+            var flag = il2Cpp.PlusSearch(metadata.methodDefs.Count(x => x.methodIndex >= 0), metadata.typeDefs.Length, metadata.imageDefs.Length);
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                var flag = il2Cpp.PlusSearch(metadata.methodDefs.Count(x => x.methodIndex >= 0), metadata.typeDefs.Length, metadata.imageDefs.Length);
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                if (!flag && il2Cpp is PE)
                 {
-                    if (!flag && il2Cpp is PE)
-                    {
-                        throw new FileIsProtectedException();
-                        /*Console.WriteLine("Use custom PE loader");
-                        il2Cpp = PELoader.Load(il2cppPath);
-                        il2Cpp.SetProperties(version, metadata.metadataUsagesCount);
-                        flag = il2Cpp.PlusSearch(metadata.methodDefs.Count(x => x.methodIndex >= 0), metadata.typeDefs.Length, metadata.imageDefs.Length);*/
-                    }
-                }
-                if (!flag)
-                {
-                    flag = il2Cpp.Search();
-                }
-                if (!flag)
-                {
-                    flag = il2Cpp.SymbolSearch();
-                }
-                if (!flag)
-                {
-                    Console.WriteLine("ERROR: Can't use auto mode to process file, try manual mode.");
-                    Console.Write("Input CodeRegistration: ");
-                    var codeRegistration = Convert.ToUInt64(Console.ReadLine(), 16);
-                    Console.Write("Input MetadataRegistration: ");
-                    var metadataRegistration = Convert.ToUInt64(Console.ReadLine(), 16);
-                    il2Cpp.Init(codeRegistration, metadataRegistration);
-                }
-                if (il2Cpp.Version >= 27 && il2Cpp.IsDumped)
-                {
-                    var typeDef = metadata.typeDefs[0];
-                    var il2CppType = il2Cpp.types[typeDef.byvalTypeIndex];
-                    metadata.ImageBase = il2CppType.data.typeHandle - metadata.header.typeDefinitionsOffset;
+                    throw new FileIsProtectedException();
+                    /*Console.WriteLine("Use custom PE loader");
+                    il2Cpp = PELoader.Load(il2cppPath);
+                    il2Cpp.SetProperties(version, metadata.metadataUsagesCount);
+                    flag = il2Cpp.PlusSearch(metadata.methodDefs.Count(x => x.methodIndex >= 0), metadata.typeDefs.Length, metadata.imageDefs.Length);*/
                 }
             }
-            catch (Exception e) when (e is not FileIsProtectedException)
+            if (!flag)
             {
-                Console.WriteLine(e);
-                Console.WriteLine("ERROR: An error occurred while processing.");
-                return false;
+                flag = il2Cpp.Search();
             }
-            return true;
+            if (!flag)
+            {
+                flag = il2Cpp.SymbolSearch();
+            }
+            if (!flag)
+            {
+                Console.WriteLine("ERROR: Can't use auto mode to process file, try manual mode.");
+                Console.Write("Input CodeRegistration: ");
+                var codeRegistration = Convert.ToUInt64(Console.ReadLine(), 16);
+                Console.Write("Input MetadataRegistration: ");
+                var metadataRegistration = Convert.ToUInt64(Console.ReadLine(), 16);
+                il2Cpp.Init(codeRegistration, metadataRegistration);
+            }
+            if (il2Cpp.Version >= 27 && il2Cpp.IsDumped)
+            {
+                var typeDef = metadata.typeDefs[0];
+                var il2CppType = il2Cpp.types[typeDef.byvalTypeIndex];
+                metadata.ImageBase = il2CppType.data.typeHandle - metadata.header.typeDefinitionsOffset;
+            }
         }
 
         public static void Dump(Metadata metadata, Il2Cpp il2Cpp, string outputDir)

@@ -9,7 +9,6 @@ namespace SCPSL_ModPatch
 {
     public partial class MainForm : Form
     {
-        const string CONFIG_FILENAME = @".\config.json";
         const string PATCHINFO_FILENAME = @".\patchinfo.json";
         const string PATCHINFO_TEMPLATE_FILENAME = @".\patchinfo_template.json";
 
@@ -21,7 +20,7 @@ namespace SCPSL_ModPatch
                     "Try to find game version data in \"global-metadata.dat\".";
         const string VERSION_RANGE_SELECTION_IS_EMPTY_MESSAGE = "Please select game version in the drop-down list.";
 
-        ConfigurationClass _config;
+        Configuration _config;
         PatchInfo _patchInfo;
 
         byte[] _gameAssemblyData = Array.Empty<byte>();
@@ -32,6 +31,7 @@ namespace SCPSL_ModPatch
         Il2cppManager _il2CppManager = new();
         GameVersion _gameVersion;
         readonly string _defaultGameVersionString;
+        bool _isIl2cppLoading = false;
 
         VersionRangeInfo SelectedVersionRange { get => (VersionRangeInfo)versionComboBox.SelectedItem; }
         VersionRangeInfo? _il2cppLoadedVersionRange;
@@ -48,11 +48,14 @@ namespace SCPSL_ModPatch
         public MainForm()
         {
             InitializeComponent();
-            _config = SettingsForm.GetConfiguration(CONFIG_FILENAME);
+            _config = SettingsForm.GetConfiguration();
             _defaultGameVersionString = versionTextBox.Lines[1];
 #if DEBUG
             GeneratePatchInfoTemplate();
 #endif
+            if (_config.AutoUpdatePatchInfo)
+                Updater.UpdatePatchInfo(PATCHINFO_FILENAME);
+
             _patchInfo = GetPatchInfo();
             UpdateVersionComboBox();
         }
@@ -95,7 +98,7 @@ namespace SCPSL_ModPatch
         {
             SettingsForm settingsForm = new SettingsForm();
             settingsForm.ShowDialog();
-            _config = SettingsForm.GetConfiguration(CONFIG_FILENAME);
+            _config = SettingsForm.GetConfiguration();
         }
 
         private async void il2cppButton_Click(object sender, EventArgs e)
@@ -112,6 +115,7 @@ namespace SCPSL_ModPatch
                 return;
             }
 
+            _isIl2cppLoading = true;
             il2cppButton.Enabled = false;
             var initButtonText = il2cppButton.Text;
             il2cppButton.Text = "Loading IL2CPP...";
@@ -148,6 +152,7 @@ namespace SCPSL_ModPatch
             IL2CPP_LOAD_END:
             il2cppButton.Text = initButtonText;
             il2cppButton.Enabled = true;
+            _isIl2cppLoading = false;
         }
 
         /// <summary>
@@ -181,11 +186,6 @@ namespace SCPSL_ModPatch
             return true;
         }
 
-        public static string GetParentFolderFromFilePath(string filePath)
-        {
-            return filePath.Replace(@$"\{Path.GetFileName(filePath)}", string.Empty);
-        }
-
         private void ChangeVersionTextBoxLines(int i, string value)
         {
             var textLines = versionTextBox.Lines;
@@ -195,6 +195,9 @@ namespace SCPSL_ModPatch
 
         private void patchButton_Click(object sender, EventArgs e)
         {
+            if (_isIl2cppLoading)
+                return;
+
             if (!_il2CppManager.IsIl2cppLoaded)
             {
                 MessageBox.Show(IL2CPP_IS_NOT_LOADED_MESSAGE, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -225,6 +228,9 @@ namespace SCPSL_ModPatch
 
         private void changeVersionButton_Click(object sender, EventArgs e)
         {
+            if (_isIl2cppLoading)
+                return;
+
             if (!_il2CppManager.IsIl2cppLoaded)
             {
                 MessageBox.Show(IL2CPP_IS_NOT_LOADED_MESSAGE, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -249,7 +255,16 @@ namespace SCPSL_ModPatch
                 return;
             }
 
-            ChangeVersionForm changeVersionForm = new ChangeVersionForm(_gameVersion);
+            ChangeVersionForm changeVersionForm;
+            try
+            {
+                changeVersionForm = new ChangeVersionForm(_gameVersion);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             changeVersionForm.ShowDialog();
             changeVersionForm.Dispose();
 
