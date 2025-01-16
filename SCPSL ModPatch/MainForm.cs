@@ -13,6 +13,7 @@ namespace SCPSL_ModPatch
         const string PATCHINFO_TEMPLATE_FILENAME = @".\patchinfo_template.json";
 
         const string IL2CPP_IS_NOT_LOADED_MESSAGE = "IL2CPP is not loaded. Please load IL2CPP first.";
+        const string IL2CPP_IS_LOADING_MESSAGE = "IL2CPP is loading. Please wait and try again.";
         const string GAME_PATH_IS_EMPTY_MESSAGE = "Game path is empty. Please type valid game path in the settings.";
         const string GAME_PATH_IS_INVALID_MESSAGE = "Game path is invalid. Please type valid game path in the settings.";
         const string IL2CPP_LOADED_FOR_DIFFERENT_VERSIONS_MESSAGE = "IL2CPP is loaded for different versions. Please load IL2CPP again to continue.";
@@ -82,7 +83,7 @@ namespace SCPSL_ModPatch
             patchInfo.versionRanges[0].versionRange = "TEMPLATE_PATCHINFO";
             patchInfo.versionRanges[0].methods.patchMethods = new PatchMethodInfo[1];
             patchInfo.versionRanges[0].methods.patchMethods[0] = new PatchMethodInfo();
-            patchInfo.versionRanges[0].methods.patchMethods[0].newHexCodedInstructions = Convert.ToHexString(new byte[] { 0 });
+            patchInfo.versionRanges[0].methods.patchMethods[0].patchData = Convert.ToHexString(new byte[] { 0 });
             string patchInfoJson = JsonConvert.SerializeObject(patchInfo, Formatting.Indented);
             File.WriteAllText(PATCHINFO_TEMPLATE_FILENAME, patchInfoJson);
         }
@@ -196,7 +197,10 @@ namespace SCPSL_ModPatch
         private void patchButton_Click(object sender, EventArgs e)
         {
             if (_isIl2cppLoading)
+            {
+                MessageBox.Show(IL2CPP_IS_LOADING_MESSAGE, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
+            }
 
             if (!_il2CppManager.IsIl2cppLoaded)
             {
@@ -229,7 +233,10 @@ namespace SCPSL_ModPatch
         private void changeVersionButton_Click(object sender, EventArgs e)
         {
             if (_isIl2cppLoading)
+            {
+                MessageBox.Show(IL2CPP_IS_LOADING_MESSAGE, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
+            }
 
             if (!_il2CppManager.IsIl2cppLoaded)
             {

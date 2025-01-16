@@ -117,9 +117,9 @@
             autoUpdatePatchInfoCheckBox.AutoSize = true;
             autoUpdatePatchInfoCheckBox.Location = new Point(12, 112);
             autoUpdatePatchInfoCheckBox.Name = "autoUpdatePatchInfoCheckBox";
-            autoUpdatePatchInfoCheckBox.Size = new Size(197, 19);
+            autoUpdatePatchInfoCheckBox.Size = new Size(271, 19);
             autoUpdatePatchInfoCheckBox.TabIndex = 5;
-            autoUpdatePatchInfoCheckBox.Text = "Automatically update patch info";
+            autoUpdatePatchInfoCheckBox.Text = "Automatically update patch info from the web";
             autoUpdatePatchInfoCheckBox.UseVisualStyleBackColor = true;
             // 
             // SettingsForm
@@ -133,7 +133,7 @@
             Controls.Add(applyButton);
             Controls.Add(GamePathGroupBox);
             Margin = new Padding(3, 2, 3, 2);
-            MinimumSize = new Size(268, 287);
+            MinimumSize = new Size(312, 287);
             Name = "SettingsForm";
             ShowIcon = false;
             StartPosition = FormStartPosition.CenterParent;

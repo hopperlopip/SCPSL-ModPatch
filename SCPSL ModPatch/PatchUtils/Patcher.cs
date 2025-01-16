@@ -1,12 +1,7 @@
 ﻿using Il2CppDumper;
 using SCPSL_ModPatch.IL2Cpp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
-using static SCPSL_ModPatch.GameVersion;
+using System.Text.RegularExpressions;
 
 namespace SCPSL_ModPatch.PatchUtils
 {
@@ -196,35 +191,83 @@ namespace SCPSL_ModPatch.PatchUtils
         }
 
         /// <summary>
+        /// Prepares patch data before patching.
+        /// </summary>
+        /// <param name="patchData">Raw patch data from user.</param>
+        /// <returns>Clean patch data that contains only hex.</returns>
+        private string PreparePatchData(string patchData)
+        {
+            StringBuilder patchDataSB = new StringBuilder(patchData);
+
+            patchDataSB.Replace("[NOP]", "90");
+            patchDataSB.Replace("[RET]", "C3");
+
+            //FASM
+            MatchCollection matches = Regex.Matches(patchDataSB.ToString(), @"\[FASM:(.*?)\]");
+            bool isFasmExisting = FASM.IsFasmExisting();
+            if (!isFasmExisting && matches.Count > 0)
+            {
+                MessageBox.Show("FASM Assembler binary was not found.\r\n" +
+                    "All assembly blocks will be skipped.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            foreach (Match match in matches)
+            {
+                string fasmKeyword = match.Groups[0].Value;
+                string mnemonics = match.Groups[1].Value;
+                string hexInstructions;
+                if (!isFasmExisting)
+                {
+                    patchDataSB.Replace(fasmKeyword, string.Empty);
+                    continue;
+                }
+                try
+                {
+                    hexInstructions = FASM.AssembleToHex(mnemonics);
+                    patchDataSB.Replace(fasmKeyword, hexInstructions);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"The assembly block ({fasmKeyword}) will be skipped.\r\n" +
+                        $"Reason: {ex.Message}", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    patchDataSB.Replace(fasmKeyword, string.Empty);
+                }
+            }
+
+            // Replacing a possible " " and "-" separators.
+            patchDataSB.Replace(" ", string.Empty);
+            patchDataSB.Replace("-", string.Empty);
+
+            patchData = patchDataSB.ToString();
+            return patchData;
+        }
+
+        /// <summary>
         /// Patches function in the GameAssembly.
         /// </summary>
         /// <param name="functionOffset">Offset of the function.</param>
         /// <param name="patchMethod">Method patch information.</param>
         private void PatchFunction(int functionOffset, PatchMethodInfo patchMethod)
         {
-            string newHexCodedInstructions = patchMethod.newHexCodedInstructions;
+            string rawUserPatchData = patchMethod.patchData;
+            string hexPatchData = PreparePatchData(rawUserPatchData);
 
-            StringBuilder newHexCodedInstructionsSB = new StringBuilder(newHexCodedInstructions);
-            newHexCodedInstructionsSB.Replace(" ", string.Empty).Replace("-", string.Empty); // Replacing a possible " " and "-" separators.
-            newHexCodedInstructions = newHexCodedInstructionsSB.ToString();
-
-            byte[] newInstructions;
+            byte[] patchData;
             try
             {
-                newInstructions = Convert.FromHexString(newHexCodedInstructions);
+                patchData = Convert.FromHexString(hexPatchData);
             }
             catch (Exception ex) when (ex is FormatException)
             {
-                throw new FormatException($"The hex-coded instructions ({newHexCodedInstructions}) of ({patchMethod.name}) method aren't valid.");
+                throw new FormatException($"The hex-coded patch data ({hexPatchData}) of ({patchMethod.name}) method aren't valid.");
             }
             int patchOffset = functionOffset + patchMethod.patchOffset;
             int patchSize = patchMethod.patchSize;
 
             for (int i = 0; i < patchSize; i++)
             {
-                if (i < newInstructions.Length)
+                if (i < patchData.Length)
                 {
-                    _gameAssemblyData[i + patchOffset] = newInstructions[i];
+                    _gameAssemblyData[i + patchOffset] = patchData[i];
                 }
                 else
                 {

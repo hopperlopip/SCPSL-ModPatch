@@ -43,7 +43,7 @@ namespace SCPSL_ModPatch.PatchUtils
     {
         public string name = string.Empty;
         public int patchOffset; // Relative offset from method start.
-        public string newHexCodedInstructions = string.Empty; // Hex-coded new instructions.
+        public string patchData = string.Empty; // Hex-coded patch data.
         public int patchSize; // Size of patching area.
     }
 
