@@ -12,7 +12,7 @@
           {
             "name": "",
             "patchOffset": 0,
-            "newHexCodedInstructions": "00",
+            "patchData": "00",
             "patchSize": 0
           }
         ],
