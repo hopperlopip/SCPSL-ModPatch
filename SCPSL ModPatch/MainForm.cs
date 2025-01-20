@@ -185,6 +185,7 @@ namespace SCPSL_ModPatch
             }
             await _il2CppManager.DumpIl2cppAsync();
             await _il2CppManager.GetScriptJsonAsync();
+            await _il2CppManager.GetMethodsDictionaryAsync();
             _il2CppManager.RemoveDumpFolder();
             return true;
         }

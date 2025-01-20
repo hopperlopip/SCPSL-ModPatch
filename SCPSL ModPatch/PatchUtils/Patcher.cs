@@ -63,16 +63,37 @@ namespace SCPSL_ModPatch.PatchUtils
         /// <param name="functionName">Name of the function.</param>
         /// <param name="scriptJson"></param>
         /// <returns></returns>
+        [Obsolete]
         private static int GetOffsetFromFuncName(Il2Cpp il2Cpp, string functionName, ScriptJson scriptJson)
         {
             for (int i = 0; i < scriptJson.ScriptMethod.Count; i++)
             {
                 if (scriptJson.ScriptMethod[i].Name == functionName)
                 {
-                    ulong address = scriptJson.ScriptMethod[i].Address;
+                    ScriptMethod method = scriptJson.ScriptMethod[i];
+                    ulong address = method.Address;
                     ulong offset = address - GetRVAOffset(il2Cpp, address);
                     return Convert.ToInt32(offset);
                 }
+            }
+            return -1;
+        }
+
+        /// <summary>
+        /// Gets offset from function name.
+        /// </summary>
+        /// <param name="il2Cpp"></param>
+        /// <param name="functionName">Name of the function.</param>
+        /// <param name="methodsDictionary">Dictionary that contains all the methods info.</param>
+        /// <returns></returns>
+        private static int GetOffsetFromFuncName(Il2Cpp il2Cpp, string functionName, IReadOnlyDictionary<string, ScriptMethod> methodsDictionary)
+        {
+            if (methodsDictionary.ContainsKey(functionName))
+            {
+                ScriptMethod method = methodsDictionary[functionName];
+                ulong address = method.Address;
+                ulong offset = address - GetRVAOffset(il2Cpp, address);
+                return Convert.ToInt32(offset);
             }
             return -1;
         }
@@ -84,7 +105,7 @@ namespace SCPSL_ModPatch.PatchUtils
         /// <returns></returns>
         private int GetOffsetFromFuncName(string functionName)
         {
-            return GetOffsetFromFuncName(_il2cppManager.IL2CPP, functionName, _il2cppManager.ScriptJson);
+            return GetOffsetFromFuncName(_il2cppManager.IL2CPP, functionName, _il2cppManager.MethodsDictionary);
         }
 
         /// <summary>
@@ -321,7 +342,7 @@ namespace SCPSL_ModPatch.PatchUtils
         public GameVersion GetGameVersion()
         {
             GameVersionMethodInfo gameVersionMethod = _versionRangeInfo.methods.gameVersionMethod;
-            int gameVersionOffset = GetOffsetFromFuncName(_il2cppManager.IL2CPP, gameVersionMethod.name, _il2cppManager.ScriptJson);
+            int gameVersionOffset = GetOffsetFromFuncName(_il2cppManager.IL2CPP, gameVersionMethod.name, _il2cppManager.MethodsDictionary);
             if (gameVersionOffset < 0)
             {
                 throw new GameVersionNotFoundException();
@@ -341,7 +362,7 @@ namespace SCPSL_ModPatch.PatchUtils
         public void ChangeGameVersion(GameVersion version)
         {
             GameVersionMethodInfo gameVersionMethod = _versionRangeInfo.methods.gameVersionMethod;
-            int gameVersionOffset = GetOffsetFromFuncName(_il2cppManager.IL2CPP, gameVersionMethod.name, _il2cppManager.ScriptJson);
+            int gameVersionOffset = GetOffsetFromFuncName(_il2cppManager.IL2CPP, gameVersionMethod.name, _il2cppManager.MethodsDictionary);
             _gameAssemblyData[gameVersionOffset + gameVersionMethod.majorOffset] = version.major;
             _gameAssemblyData[gameVersionOffset + gameVersionMethod.minorOffset] = version.minor;
             _gameAssemblyData[gameVersionOffset + gameVersionMethod.revisionOffset] = version.revision;

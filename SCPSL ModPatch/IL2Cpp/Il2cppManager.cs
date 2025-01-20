@@ -15,6 +15,7 @@ namespace SCPSL_ModPatch.IL2Cpp
         Il2Cpp? _il2Cpp;
         Metadata? _metadata;
         ScriptJson? _scriptJson;
+        Dictionary<string, ScriptMethod>? _methodsDictionary;
         public bool IsIl2cppLoaded { get => _il2Cpp != null; }
         public Il2Cpp IL2CPP
         {
@@ -41,6 +42,19 @@ namespace SCPSL_ModPatch.IL2Cpp
                 if (_scriptJson == null)
                     throw new NullReferenceException("ScriptJson is not loaded or not loaded properly.");
                 return _scriptJson;
+            }
+        }
+
+        /// <summary>
+        /// Keys are methods names.
+        /// </summary>
+        public IReadOnlyDictionary<string, ScriptMethod> MethodsDictionary
+        {
+            get
+            {
+                if (_methodsDictionary == null)
+                    throw new NullReferenceException("MethodsDictionary is not loaded or not loaded properly.");
+                return _methodsDictionary;
             }
         }
 
@@ -86,10 +100,7 @@ namespace SCPSL_ModPatch.IL2Cpp
             if (!Directory.Exists(IL2CPP_FOLDER))
                 Directory.CreateDirectory(IL2CPP_FOLDER);
 
-            if (_il2Cpp == null || _metadata == null)
-                throw new Exception("Il2cpp is not loaded or not properly loaded.");
-
-            Il2CppDumperWorker.Dump(_metadata, _il2Cpp, @$"{IL2CPP_FOLDER}\");
+            Il2CppDumperWorker.Dump(Metadata, IL2CPP, @$"{IL2CPP_FOLDER}\");
             GC.Collect();
             GC.WaitForPendingFinalizers();
         }
@@ -119,6 +130,23 @@ namespace SCPSL_ModPatch.IL2Cpp
             if (scriptJson == null)
                 throw new Exception("Couldn't deserialize JSON file.");
             _scriptJson = scriptJson;
+        }
+
+        public void GetMethodsDictionary()
+        {
+            _methodsDictionary = new Dictionary<string, ScriptMethod>();
+            foreach (ScriptMethod method in ScriptJson.ScriptMethod)
+            {
+                string methodName = method.Name;
+                if (_methodsDictionary.ContainsKey(methodName))
+                    continue;
+                _methodsDictionary.Add(methodName, method);
+            }
+        }
+
+        public async Task GetMethodsDictionaryAsync()
+        {
+            await Task.Run(() => GetMethodsDictionary());
         }
 
         public void RemoveDumpFolder()
