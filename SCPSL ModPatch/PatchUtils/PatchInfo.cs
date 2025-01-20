@@ -50,10 +50,6 @@ namespace SCPSL_ModPatch.PatchUtils
     public class GameVersionMethodInfo
     {
         public string name = "GameCore.Version$$.cctor";
-
-        [JsonIgnore]
-        public bool methodNotFound = false;
-
         public int majorOffset;
         public int minorOffset;
         public int revisionOffset;

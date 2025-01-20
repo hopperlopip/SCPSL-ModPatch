@@ -31,6 +31,7 @@ namespace SCPSL_ModPatch
 
         Il2cppManager _il2CppManager = new();
         GameVersion _gameVersion;
+        bool _isGameVersionNotFound = false;
         readonly string _defaultGameVersionString;
         bool _isIl2cppLoading = false;
 
@@ -138,6 +139,7 @@ namespace SCPSL_ModPatch
             Patcher patcher = new Patcher(GameAssemblyPath, _gameAssemblyData, _il2CppManager, _il2cppLoadedVersionRange);
 
             GameVersion gameVersion = new();
+            _isGameVersionNotFound = false;
             try
             {
                 gameVersion = patcher.GetGameVersion();
@@ -146,7 +148,7 @@ namespace SCPSL_ModPatch
             }
             catch (Exception ex) when (ex is GameVersionNotFoundException)
             {
-                _il2cppLoadedVersionRange.methods.gameVersionMethod.methodNotFound = true;
+                _isGameVersionNotFound = true;
                 ChangeVersionTextBoxLines(1, "Game version is not found in GameAssembly.dll");
             }
 
@@ -256,7 +258,7 @@ namespace SCPSL_ModPatch
                 return;
             }
 
-            if (Il2cppLoadedVersionRange.methods.gameVersionMethod.methodNotFound)
+            if (_isGameVersionNotFound)
             {
                 MessageBox.Show(GAME_VERSION_METHOD_IS_NOT_FOUND_MESSAGE, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
