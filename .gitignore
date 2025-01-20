@@ -361,4 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
-/SCPSL ModPatch/clean_launchers
+
+# Custom directories
+/SCPSL ModPatch/fasm_binaries
