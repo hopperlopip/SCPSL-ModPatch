@@ -27,8 +27,10 @@ namespace SCPSL_ModPatch.PatchUtils
         {
             if (!string.IsNullOrEmpty(versionRange))
                 return versionRange;
-            if (string.IsNullOrEmpty(versionFrom) || string.IsNullOrEmpty(versionTo))
+            if (string.IsNullOrEmpty(versionFrom))
                 return "Undefined version range";
+            if (string.IsNullOrEmpty(versionTo))
+                return versionFrom;
             return $"{versionFrom} – {versionTo}";
         }
     }
