@@ -16,6 +16,7 @@ namespace SCPSL_ModPatch
     {
         const string CONFIG_FILENAME = @".\config.json";
         Configuration _config;
+        bool _requireRestart;
 
         public SettingsForm()
         {
@@ -43,29 +44,63 @@ namespace SCPSL_ModPatch
 
         private void UpdateSettings()
         {
-            gamePathTextBox.Text = _config.GameFolder_Path;
-            unlicenseTextBox.Text = _config.Unlicense_Path;
-            autoUpdatePatchInfoCheckBox.Checked = _config.AutoUpdatePatchInfo;
-            customPatchInfoCheckBox.Checked = _config.CustomPatchInfoEnable;
-            customPatchInfoPathTextBox.Text = _config.CustomPatchInfoPath;
+            UpdateSettings(_config);
+        }
+
+        private void UpdateSettings(Configuration config)
+        {
+            // GameFolder_Path
+            gamePathTextBox.Text = config.GameFolder_Path;
+
+            // Unlicense_Path
+            unlicenseTextBox.Text = config.Unlicense_Path;
+
+            // AutoUpdatePatchInfo
+            autoUpdatePatchInfoCheckBox.Checked = config.AutoUpdatePatchInfo;
+
+            // CustomPatchInfoEnable
+            customPatchInfoCheckBox.Checked = config.CustomPatchInfoEnable;
+
+            // CustomPatchInfoPath
+            customPatchInfoPathTextBox.Text = config.CustomPatchInfoPath;
         }
 
         private void ApplySettings()
         {
+            // GameFolder_Path
             _config.GameFolder_Path = gamePathTextBox.Text;
+
+            // Unlicense_Path
             _config.Unlicense_Path = unlicenseTextBox.Text;
+
+            // AutoUpdatePatchInfo
             _config.AutoUpdatePatchInfo = autoUpdatePatchInfoCheckBox.Checked;
+
+            // CustomPatchInfoEnable
+            if (_config.CustomPatchInfoEnable != customPatchInfoCheckBox.Checked)
+                _requireRestart = true;
             _config.CustomPatchInfoEnable = customPatchInfoCheckBox.Checked;
+
+            // CustomPatchInfoPath
+            if (_config.CustomPatchInfoPath != customPatchInfoPathTextBox.Text)
+                _requireRestart = true;
             _config.CustomPatchInfoPath = customPatchInfoPathTextBox.Text;
 
             SaveConfiguration();
+
+            if (_requireRestart)
+                ShowRestartWarning();
         }
 
         private void ResetSettings()
         {
-            _config = new Configuration();
-            UpdateSettings();
-            SaveConfiguration();
+            UpdateSettings(new Configuration());
+            ApplySettings();
+        }
+
+        private void ShowRestartWarning()
+        {
+            MessageBox.Show("To apply some changes, you must restart the program.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
         private void applyButton_Click(object sender, EventArgs e)
