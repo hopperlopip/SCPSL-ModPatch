@@ -1,0 +1,30 @@
+{
+  "versionRanges": [
+    {
+      "versionRange": "TEMPLATE_PATCHINFO",
+      "versionFrom": "",
+      "versionTo": "",
+      "cleanLauncherPath": "",
+      "cleanLauncherUrl": "",
+      "metadataVersion": 0,
+      "methods": {
+        "patchMethods": [
+          {
+            "name": "",
+            "patchOffset": 0,
+            "patchData": "00",
+            "patchSize": 0
+          }
+        ],
+        "gameVersionMethod": {
+          "name": "GameCore.Version$$.cctor",
+          "autoFindOffsets": false,
+          "majorOffset": 0,
+          "minorOffset": 0,
+          "revisionOffset": 0,
+          "typeOffset": 0
+        }
+      }
+    }
+  ]
+}
