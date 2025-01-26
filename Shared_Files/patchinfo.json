@@ -1,27 +1,157 @@
 {
   "versionRanges": [
     {
-      "versionRange": "TEMPLATE_PATCHINFO",
-      "versionFrom": "",
-      "versionTo": "",
-      "cleanLauncherPath": "",
-      "cleanLauncherUrl": "",
-      "metadataVersion": 0,
+      "versionRange": "10.1.0 – 11.1.4",
+      "versionFrom": "10.1.0",
+      "versionTo": "11.1.4",
+      "cleanLauncherPath": "./clean_launchers/2019.4.16f1/SCPSL.exe",
+      "cleanLauncherUrl": "https://raw.githubusercontent.com/hopperlopip/SCPSL-ModPatch/refs/heads/master/Shared_Files/clean_launchers/2019.4.16f1/SCPSL.exe",
+      "metadataVersion": 24,
       "methods": {
         "patchMethods": [
           {
-            "name": "",
+            "name": "CentralAuthManager$$Authentication",
             "patchOffset": 0,
-            "patchData": "00",
-            "patchSize": 0
+            "patchData": "[RET]",
+            "patchSize": 2
           }
         ],
         "gameVersionMethod": {
           "name": "GameCore.Version$$.cctor",
-          "majorOffset": 0,
-          "minorOffset": 0,
-          "revisionOffset": 0,
-          "typeOffset": 0
+          "majorOffset": 52,
+          "minorOffset": 70,
+          "revisionOffset": 88,
+          "typeOffset": 106
+        }
+      }
+    },
+	{
+      "versionRange": "11.1.5 – 12.0.2",
+      "versionFrom": "11.1.5",
+      "versionTo": "12.0.2",
+      "cleanLauncherPath": "./clean_launchers/2019.4.16f1/SCPSL.exe",
+      "cleanLauncherUrl": "https://raw.githubusercontent.com/hopperlopip/SCPSL-ModPatch/refs/heads/master/Shared_Files/clean_launchers/2019.4.16f1/SCPSL.exe",
+      "metadataVersion": 24,
+      "methods": {
+        "patchMethods": [
+          {
+            "name": "LauncherCommunicator$$.cctor",
+            "patchOffset": 0,
+            "patchData": "[RET]",
+            "patchSize": 4
+          },
+		  {
+            "name": "LauncherAssetScanProgressBar$$Update",
+            "patchOffset": 0,
+            "patchData": "[RET]",
+            "patchSize": 2
+          },
+		  {
+            "name": "SimpleMenu.<StartLoad>d__10$$MoveNext",
+            "patchOffset": 226,
+            "patchData": "[NOP][NOP][NOP]EB1B",
+            "patchSize": 5
+          },
+		  {
+            "name": "CentralAuthManager$$Authentication",
+            "patchOffset": 0,
+            "patchData": "[RET]",
+            "patchSize": 2
+          }
+        ],
+        "gameVersionMethod": {
+          "name": "GameCore.Version$$.cctor",
+          "majorOffset": 52,
+          "minorOffset": 70,
+          "revisionOffset": 88,
+          "typeOffset": 106
+        }
+      }
+    },
+	{
+      "versionRange": "13.0.0 – 13.5.1",
+      "versionFrom": "13.0.0",
+      "versionTo": "13.5.1",
+      "cleanLauncherPath": "./clean_launchers/2021.3.17f1/SCPSL.exe",
+      "cleanLauncherUrl": "https://raw.githubusercontent.com/hopperlopip/SCPSL-ModPatch/refs/heads/master/Shared_Files/clean_launchers/2021.3.17f1/SCPSL.exe",
+      "metadataVersion": 29,
+      "methods": {
+        "patchMethods": [
+          {
+            "name": "LauncherCommunicator$$.cctor",
+            "patchOffset": 0,
+            "patchData": "[RET]",
+            "patchSize": 4
+          },
+		  {
+            "name": "LauncherAssetScanProgressBar$$Update",
+            "patchOffset": 0,
+            "patchData": "[RET]",
+            "patchSize": 2
+          },
+		  {
+            "name": "SimpleMenu.<StartLoad>d__10$$MoveNext",
+            "patchOffset": 243,
+            "patchData": "[NOP][NOP][NOP]EB1B",
+            "patchSize": 5
+          },
+		  {
+            "name": "CentralAuthManager$$Authentication",
+            "patchOffset": 0,
+            "patchData": "[RET]",
+            "patchSize": 3
+          }
+        ],
+        "gameVersionMethod": {
+          "name": "GameCore.Version$$.cctor",
+          "majorOffset": 125,
+          "minorOffset": 143,
+          "revisionOffset": 161,
+          "typeOffset": 197
+        }
+      }
+    },
+	{
+      "versionRange": "13.6.9 – Current",
+      "versionFrom": "13.6.9",
+      "versionTo": "Current",
+      "cleanLauncherPath": "./clean_launchers/2021.3.17f1/SCPSL.exe",
+      "cleanLauncherUrl": "https://raw.githubusercontent.com/hopperlopip/SCPSL-ModPatch/refs/heads/master/Shared_Files/clean_launchers/2021.3.17f1/SCPSL.exe",
+      "metadataVersion": 29,
+      "methods": {
+        "patchMethods": [
+          {
+            "name": "LauncherCommunicator$$.cctor",
+            "patchOffset": 0,
+            "patchData": "[RET]",
+            "patchSize": 2
+          },
+		  {
+            "name": "SimpleMenu.<StartLoad>d__8$$MoveNext",
+            "patchOffset": 354,
+            "patchData": "[NOP]",
+            "patchSize": 9
+          },
+		  {
+            "name": "SimpleMenu.<StartLoad>d__8$$MoveNext",
+            "patchOffset": 476,
+            "patchData": "B801000000",
+            "patchSize": 13
+          },
+		  {
+            "name": "CentralAuth.CentralAuthManager$$Authentication",
+            "patchOffset": 0,
+            "patchData": "[RET]",
+            "patchSize": 3
+          }
+        ],
+        "gameVersionMethod": {
+          "name": "GameCore.Version$$.cctor",
+		  "autoFindOffsets": true,
+          "majorOffset": 152,
+          "minorOffset": 170,
+          "revisionOffset": 188,
+          "typeOffset": 224
         }
       }
     }
