@@ -147,7 +147,7 @@
         ],
         "gameVersionMethod": {
           "name": "GameCore.Version$$.cctor",
-		  "autoFindOffsets": true,
+          "autoFindOffsets": true,
           "majorOffset": 152,
           "minorOffset": 170,
           "revisionOffset": 188,
