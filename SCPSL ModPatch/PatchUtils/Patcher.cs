@@ -1,5 +1,6 @@
 ﻿using Il2CppDumper;
 using SCPSL_ModPatch.IL2Cpp;
+using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -342,7 +343,7 @@ namespace SCPSL_ModPatch.PatchUtils
         public GameVersion GetGameVersion()
         {
             GameVersionMethodInfo gameVersionMethod = _versionRangeInfo.methods.gameVersionMethod;
-            int gameVersionOffset = GetOffsetFromFuncName(_il2cppManager.IL2CPP, gameVersionMethod.name, _il2cppManager.MethodsDictionary);
+            int gameVersionOffset = GetOffsetFromFuncName(gameVersionMethod.name);
             if (gameVersionOffset < 0)
             {
                 throw new GameVersionNotFoundException();
@@ -362,11 +363,99 @@ namespace SCPSL_ModPatch.PatchUtils
         public void ChangeGameVersion(GameVersion version)
         {
             GameVersionMethodInfo gameVersionMethod = _versionRangeInfo.methods.gameVersionMethod;
-            int gameVersionOffset = GetOffsetFromFuncName(_il2cppManager.IL2CPP, gameVersionMethod.name, _il2cppManager.MethodsDictionary);
+            int gameVersionOffset = GetOffsetFromFuncName(gameVersionMethod.name);
             _gameAssemblyData[gameVersionOffset + gameVersionMethod.majorOffset] = version.major;
             _gameAssemblyData[gameVersionOffset + gameVersionMethod.minorOffset] = version.minor;
             _gameAssemblyData[gameVersionOffset + gameVersionMethod.revisionOffset] = version.revision;
             _gameAssemblyData[gameVersionOffset + gameVersionMethod.typeOffset] = (byte)version.type;
+        }
+
+        // Game version auto finder
+
+        /// <summary>
+        /// Automatically finds GameVersion offsets.
+        /// </summary>
+        public void AutoFindGameVersionOffsets()
+        {
+            GameVersionMethodInfo gameVersionMethod = _versionRangeInfo.methods.gameVersionMethod;
+            int gameVersionOffset = GetOffsetFromFuncName(gameVersionMethod.name);
+            AutoFindGameVersionOffsets(gameVersionOffset);
+        }
+
+        /// <summary>
+        /// Automatically finds GameVersion offsets.
+        /// </summary>
+        /// <param name="gameVersionOffset">Offset of the GameVersion method.</param>
+        public void AutoFindGameVersionOffsets(int gameVersionOffset)
+        {
+            byte majorFieldOffset = 0;
+            byte minorFieldOffset = 1;
+            byte revisionFieldOffset = 2;
+            byte typeFieldOffset = 4;
+
+            byte[] fieldsOffsets = new byte[] { majorFieldOffset, minorFieldOffset, revisionFieldOffset, typeFieldOffset };
+            int[] fieldsValuesOffsets = new int[fieldsOffsets.Length];
+
+            int findOffset = checked((int)GetPatternOffset(gameVersionOffset));
+            for (int i = 0; i < fieldsOffsets.Length; i++)
+            {
+                fieldsValuesOffsets[i] = GetVersionStaticFieldValueOffset(fieldsOffsets[i], findOffset, out int newFindOffset);
+                findOffset = newFindOffset;
+            }
+
+            GameVersionMethodInfo gameVersionMethod = _versionRangeInfo.methods.gameVersionMethod;
+            gameVersionMethod.majorOffset = fieldsValuesOffsets[0] - gameVersionOffset;
+            gameVersionMethod.minorOffset = fieldsValuesOffsets[1] - gameVersionOffset;
+            gameVersionMethod.revisionOffset = fieldsValuesOffsets[2] - gameVersionOffset;
+            gameVersionMethod.typeOffset = fieldsValuesOffsets[3] - gameVersionOffset;
+        }
+
+        /// <summary>
+        /// Gets pattern offset inside the GameVersion method.
+        /// </summary>
+        /// <param name="gameVersionOffset"></param>
+        /// <returns>Pattern offset.</returns>
+        private long GetPatternOffset(int gameVersionOffset)
+        {
+            byte[] patternInstruction = new byte[] { 0x48, 0x8B, 0x88, 0xB8, 0x00, 0x00, 0x00 }; // mov rcx, [rax+0B8h]
+            long patternOffset = _gameAssemblyData.IndexOf(patternInstruction, gameVersionOffset);
+            return patternOffset;
+        }
+
+        /// <summary>
+        /// Gets version staticField value offset.
+        /// </summary>
+        /// <param name="staticFieldOffset"></param>
+        /// <param name="findOffset"></param>
+        /// <param name="newFindOffset"></param>
+        /// <returns>StaticField value offset.</returns>
+        private int GetVersionStaticFieldValueOffset(byte staticFieldOffset, int findOffset, out int newFindOffset)
+        {
+            byte[] instructionBytes = GetVersionStaticFieldInstructionBytes(staticFieldOffset);
+            int instructionLength = instructionBytes.Length;
+            int instructionOffset = checked((int)_gameAssemblyData.IndexOf(instructionBytes, findOffset));
+
+            int staticFieldValueOffset = instructionOffset + instructionLength;
+
+            newFindOffset = staticFieldValueOffset + 1;
+
+            return staticFieldValueOffset;
+        }
+
+        /// <summary>
+        /// Gets version staticField instruction pattern for searching.
+        /// </summary>
+        /// <param name="staticFieldOffset"></param>
+        /// <returns>Pattern of the instruction.</returns>
+        private static byte[] GetVersionStaticFieldInstructionBytes(byte staticFieldOffset)
+        {
+            switch (staticFieldOffset)
+            {
+                case 0:
+                    return new byte[] { 0xC6, 0x01 }; // mov byte ptr [rcx], {value}
+                default:
+                    return new byte[] { 0xC6, 0x41, staticFieldOffset }; // mov byte ptr [rcx+{offset}], {value}
+            }
         }
     }
 }

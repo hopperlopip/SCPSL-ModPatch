@@ -140,6 +140,10 @@ namespace SCPSL_ModPatch
 
             GameVersion gameVersion = new();
             _isGameVersionNotFound = false;
+            if (_il2cppLoadedVersionRange.methods.gameVersionMethod.autoFindOffsets)
+            {
+                patcher.AutoFindGameVersionOffsets();
+            }
             try
             {
                 gameVersion = patcher.GetGameVersion();
