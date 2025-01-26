@@ -440,6 +440,8 @@ namespace SCPSL_ModPatch.PatchUtils
         {
             byte[] patternInstruction = new byte[] { 0x48, 0x8B, 0x88, 0xB8, 0x00, 0x00, 0x00 }; // mov rcx, [rax+0B8h]
             long patternOffset = _gameAssemblyData.IndexOf(patternInstruction, gameVersionOffset);
+            if (patternOffset == -1)
+                throw new Exception("The pattern for auto game version search wasn't found.");
             return patternOffset;
         }
 
@@ -455,6 +457,8 @@ namespace SCPSL_ModPatch.PatchUtils
             byte[] instructionBytes = GetVersionStaticFieldInstructionBytes(staticFieldOffset);
             int instructionLength = instructionBytes.Length;
             int instructionOffset = checked((int)_gameAssemblyData.IndexOf(instructionBytes, findOffset));
+            if (instructionOffset == -1)
+                throw new Exception($"The instruction offset for auto game version search with field offset ({staticFieldOffset}) wasn't found.");
 
             int staticFieldValueOffset = instructionOffset + instructionLength;
 

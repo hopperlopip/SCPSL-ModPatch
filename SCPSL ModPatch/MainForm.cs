@@ -16,7 +16,8 @@ namespace SCPSL_ModPatch
         const string IL2CPP_LOADED_FOR_DIFFERENT_VERSIONS_MESSAGE = "IL2CPP is loaded for different versions. Please load IL2CPP again to continue.";
         const string GAME_VERSION_METHOD_IS_NOT_FOUND_MESSAGE = "Game version is not found in \"GameAssembly.dll\".\r\n" +
                     "Try to find game version data in \"global-metadata.dat\".";
-        const string GAME_VERSION_METHOD_INFO_IS_NULL = "Can't change the game version because there is no information in the patchinfo.";
+        const string GAME_VERSION_IS_NULL = "Can't change the game version because there is no information in the patch info or it was loaded " +
+            "with an error.";
         const string VERSION_RANGE_SELECTION_IS_EMPTY_MESSAGE = "Please select game version in the drop-down list.";
 
         Configuration _config;
@@ -160,7 +161,17 @@ namespace SCPSL_ModPatch
             GameVersion gameVersion = new();
             if (gameVersionMethod.autoFindOffsets)
             {
-                patcher.AutoFindGameVersionOffsets();
+                try
+                {
+                    patcher.AutoFindGameVersionOffsets();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"An error occured during auto searching the game version.\r\n" +
+                        $"Details: {ex.Message}", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    _gameVersion = null;
+                    goto IL2CPP_LOAD_END;
+                }
             }
             try
             {
@@ -282,7 +293,7 @@ namespace SCPSL_ModPatch
 
             if (_gameVersion == null)
             {
-                MessageBox.Show(GAME_VERSION_METHOD_INFO_IS_NULL, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(GAME_VERSION_IS_NULL, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
