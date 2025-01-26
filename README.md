@@ -71,8 +71,8 @@ Here is an example of patching versions from 10.1.0 to 11.1.4:
 
 ### PatchData keywords:
 The `patchData` has some keyword you can use in order to simplify your work:
-- `[NOP]` is a binary equivalent of assmebler `nop` instruction.
-- `[RET]` is a binary equivalent of assmebler `ret` instruction.
+- `[NOP]` is a binary equivalent of assembler `nop` instruction.
+- `[RET]` is a binary equivalent of assembler `ret` instruction.
 - `[FASM:{asm code here}]` is a special keyword that can assemble instruction, that is placed instead of `{asm code here}`, to its binary equivalent. [EXPERIMENTAL] May not work as expected.
 
 Also you can use ` `(space) and `-` separators but it is not recommended.
