@@ -13,7 +13,8 @@ There are a couple archives in the assets section.
 
 ## Creating your own mod-patches:
 In order to create and use your own mod-patches you need to use `patchinfo.json` files.
-What is it? It it special json that contains all patch data that ModPatch needs.
+What is it? It it special json that contains all patch data that ModPatch needs.<br/>
+The "clean" version of the `patchinfo.json`, named `patchinfo_template.json`, is located [here](Shared_Files/patchinfo_template/patchinfo_template.json) or in the root folder of the ModPatch program.
 
 Here is an example of patching versions from 10.1.0 to 11.1.4:
 ```json
