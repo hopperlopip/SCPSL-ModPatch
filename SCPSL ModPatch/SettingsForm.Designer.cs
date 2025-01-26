@@ -34,13 +34,16 @@
             gamePathTextBox = new TextBox();
             resetButton = new Button();
             UnlicenseGroupBox = new GroupBox();
+            browseUnlicensePathButton = new Button();
             unlicenseTextBox = new TextBox();
             autoUpdatePatchInfoCheckBox = new CheckBox();
             CustomPatchInfoGroupBox = new GroupBox();
-            browseCustomPatchInfoButton = new Button();
+            browseCustomPatchInfoPathButton = new Button();
             customPatchInfoCheckBox = new CheckBox();
             customPatchInfoPathTextBox = new TextBox();
             folderBrowserDialog = new FolderBrowserDialog();
+            openJsonFileDialog = new OpenFileDialog();
+            openExeFileDialog = new OpenFileDialog();
             GamePathGroupBox.SuspendLayout();
             UnlicenseGroupBox.SuspendLayout();
             CustomPatchInfoGroupBox.SuspendLayout();
@@ -107,6 +110,7 @@
             // UnlicenseGroupBox
             // 
             UnlicenseGroupBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            UnlicenseGroupBox.Controls.Add(browseUnlicensePathButton);
             UnlicenseGroupBox.Controls.Add(unlicenseTextBox);
             UnlicenseGroupBox.Location = new Point(12, 61);
             UnlicenseGroupBox.Margin = new Padding(3, 2, 3, 2);
@@ -117,13 +121,24 @@
             UnlicenseGroupBox.TabStop = false;
             UnlicenseGroupBox.Text = "Unlicense Path (Themida unpacker)";
             // 
+            // browseUnlicensePathButton
+            // 
+            browseUnlicensePathButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            browseUnlicensePathButton.Location = new Point(369, 18);
+            browseUnlicensePathButton.Name = "browseUnlicensePathButton";
+            browseUnlicensePathButton.Size = new Size(75, 23);
+            browseUnlicensePathButton.TabIndex = 1;
+            browseUnlicensePathButton.Text = "Browse";
+            browseUnlicensePathButton.UseVisualStyleBackColor = true;
+            browseUnlicensePathButton.Click += browseUnlicensePathButton_Click;
+            // 
             // unlicenseTextBox
             // 
-            unlicenseTextBox.Dock = DockStyle.Top;
+            unlicenseTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             unlicenseTextBox.Location = new Point(3, 18);
             unlicenseTextBox.Margin = new Padding(3, 2, 3, 2);
             unlicenseTextBox.Name = "unlicenseTextBox";
-            unlicenseTextBox.Size = new Size(444, 23);
+            unlicenseTextBox.Size = new Size(360, 23);
             unlicenseTextBox.TabIndex = 0;
             // 
             // autoUpdatePatchInfoCheckBox
@@ -139,7 +154,7 @@
             // CustomPatchInfoGroupBox
             // 
             CustomPatchInfoGroupBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            CustomPatchInfoGroupBox.Controls.Add(browseCustomPatchInfoButton);
+            CustomPatchInfoGroupBox.Controls.Add(browseCustomPatchInfoPathButton);
             CustomPatchInfoGroupBox.Controls.Add(customPatchInfoCheckBox);
             CustomPatchInfoGroupBox.Controls.Add(customPatchInfoPathTextBox);
             CustomPatchInfoGroupBox.Location = new Point(12, 137);
@@ -149,16 +164,16 @@
             CustomPatchInfoGroupBox.TabStop = false;
             CustomPatchInfoGroupBox.Text = "Custom Patch Info";
             // 
-            // browseCustomPatchInfoButton
+            // browseCustomPatchInfoPathButton
             // 
-            browseCustomPatchInfoButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            browseCustomPatchInfoButton.Location = new Point(369, 47);
-            browseCustomPatchInfoButton.Name = "browseCustomPatchInfoButton";
-            browseCustomPatchInfoButton.Size = new Size(75, 23);
-            browseCustomPatchInfoButton.TabIndex = 2;
-            browseCustomPatchInfoButton.Text = "Browse";
-            browseCustomPatchInfoButton.UseVisualStyleBackColor = true;
-            browseCustomPatchInfoButton.Click += browseCustomPatchInfoButton_Click;
+            browseCustomPatchInfoPathButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            browseCustomPatchInfoPathButton.Location = new Point(369, 47);
+            browseCustomPatchInfoPathButton.Name = "browseCustomPatchInfoPathButton";
+            browseCustomPatchInfoPathButton.Size = new Size(75, 23);
+            browseCustomPatchInfoPathButton.TabIndex = 2;
+            browseCustomPatchInfoPathButton.Text = "Browse";
+            browseCustomPatchInfoPathButton.UseVisualStyleBackColor = true;
+            browseCustomPatchInfoPathButton.Click += browseCustomPatchInfoPathButton_Click;
             // 
             // customPatchInfoCheckBox
             // 
@@ -173,10 +188,18 @@
             // customPatchInfoPathTextBox
             // 
             customPatchInfoPathTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            customPatchInfoPathTextBox.Location = new Point(6, 47);
+            customPatchInfoPathTextBox.Location = new Point(3, 47);
             customPatchInfoPathTextBox.Name = "customPatchInfoPathTextBox";
-            customPatchInfoPathTextBox.Size = new Size(357, 23);
+            customPatchInfoPathTextBox.Size = new Size(360, 23);
             customPatchInfoPathTextBox.TabIndex = 0;
+            // 
+            // openJsonFileDialog
+            // 
+            openJsonFileDialog.Filter = "JSON files|*.json|All files|*.*";
+            // 
+            // openExeFileDialog
+            // 
+            openExeFileDialog.Filter = "EXE files|*.exe|All files|*.*";
             // 
             // SettingsForm
             // 
@@ -218,7 +241,10 @@
         private CheckBox customPatchInfoCheckBox;
         private TextBox customPatchInfoPathTextBox;
         private Button browseGamePathButton;
-        private Button browseCustomPatchInfoButton;
+        private Button browseCustomPatchInfoPathButton;
         private FolderBrowserDialog folderBrowserDialog;
+        private Button browseUnlicensePathButton;
+        private OpenFileDialog openJsonFileDialog;
+        private OpenFileDialog openExeFileDialog;
     }
 }

@@ -121,11 +121,18 @@ namespace SCPSL_ModPatch
             gamePathTextBox.Text = folderBrowserDialog.SelectedPath;
         }
 
-        private void browseCustomPatchInfoButton_Click(object sender, EventArgs e)
+        private void browseUnlicensePathButton_Click(object sender, EventArgs e)
         {
-            if (folderBrowserDialog.ShowDialog() == DialogResult.Cancel)
+            if (openExeFileDialog.ShowDialog() == DialogResult.Cancel)
                 return;
-            customPatchInfoPathTextBox.Text = folderBrowserDialog.SelectedPath;
+            unlicenseTextBox.Text = openExeFileDialog.FileName;
+        }
+
+        private void browseCustomPatchInfoPathButton_Click(object sender, EventArgs e)
+        {
+            if (openJsonFileDialog.ShowDialog() == DialogResult.Cancel)
+                return;
+            customPatchInfoPathTextBox.Text = openJsonFileDialog.FileName;
         }
     }
 }
