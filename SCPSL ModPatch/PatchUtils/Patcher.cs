@@ -283,7 +283,16 @@ namespace SCPSL_ModPatch.PatchUtils
                 throw new FormatException($"The hex-coded patch data ({hexPatchData}) of ({patchMethod.name}) method aren't valid.");
             }
             int patchOffset = functionOffset + patchMethod.patchOffset;
-            int patchSize = patchMethod.patchSize;
+
+            int patchSize;
+            if (patchMethod.patchSize == null)
+            {
+                patchSize = patchData.Length;
+            }
+            else
+            {
+                patchSize = patchMethod.patchSize.Value;
+            }
 
             for (int i = 0; i < patchSize; i++)
             {
@@ -342,7 +351,10 @@ namespace SCPSL_ModPatch.PatchUtils
         /// <exception cref="GameVersionNotFoundException"></exception>
         public GameVersion GetGameVersion()
         {
-            GameVersionMethodInfo gameVersionMethod = _versionRangeInfo.methods.gameVersionMethod;
+            GameVersionMethodInfo? gameVersionMethod = _versionRangeInfo.methods.gameVersionMethod;
+            if (gameVersionMethod == null)
+                return new GameVersion();
+
             int gameVersionOffset = GetOffsetFromFuncName(gameVersionMethod.name);
             if (gameVersionOffset < 0)
             {
@@ -362,7 +374,10 @@ namespace SCPSL_ModPatch.PatchUtils
         /// <param name="version">New version of the game.</param>
         public void ChangeGameVersion(GameVersion version)
         {
-            GameVersionMethodInfo gameVersionMethod = _versionRangeInfo.methods.gameVersionMethod;
+            GameVersionMethodInfo? gameVersionMethod = _versionRangeInfo.methods.gameVersionMethod;
+            if (gameVersionMethod == null)
+                return;
+
             int gameVersionOffset = GetOffsetFromFuncName(gameVersionMethod.name);
             _gameAssemblyData[gameVersionOffset + gameVersionMethod.majorOffset] = version.major;
             _gameAssemblyData[gameVersionOffset + gameVersionMethod.minorOffset] = version.minor;
@@ -377,7 +392,10 @@ namespace SCPSL_ModPatch.PatchUtils
         /// </summary>
         public void AutoFindGameVersionOffsets()
         {
-            GameVersionMethodInfo gameVersionMethod = _versionRangeInfo.methods.gameVersionMethod;
+            GameVersionMethodInfo? gameVersionMethod = _versionRangeInfo.methods.gameVersionMethod;
+            if (gameVersionMethod == null)
+                return;
+
             int gameVersionOffset = GetOffsetFromFuncName(gameVersionMethod.name);
             AutoFindGameVersionOffsets(gameVersionOffset);
         }
@@ -388,6 +406,10 @@ namespace SCPSL_ModPatch.PatchUtils
         /// <param name="gameVersionOffset">Offset of the GameVersion method.</param>
         public void AutoFindGameVersionOffsets(int gameVersionOffset)
         {
+            GameVersionMethodInfo? gameVersionMethod = _versionRangeInfo.methods.gameVersionMethod;
+            if (gameVersionMethod == null)
+                return;
+
             byte majorFieldOffset = 0;
             byte minorFieldOffset = 1;
             byte revisionFieldOffset = 2;
@@ -403,7 +425,6 @@ namespace SCPSL_ModPatch.PatchUtils
                 findOffset = newFindOffset;
             }
 
-            GameVersionMethodInfo gameVersionMethod = _versionRangeInfo.methods.gameVersionMethod;
             gameVersionMethod.majorOffset = fieldsValuesOffsets[0] - gameVersionOffset;
             gameVersionMethod.minorOffset = fieldsValuesOffsets[1] - gameVersionOffset;
             gameVersionMethod.revisionOffset = fieldsValuesOffsets[2] - gameVersionOffset;

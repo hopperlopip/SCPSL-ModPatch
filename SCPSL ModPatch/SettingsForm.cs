@@ -46,6 +46,8 @@ namespace SCPSL_ModPatch
             gamePathTextBox.Text = _config.GameFolder_Path;
             unlicenseTextBox.Text = _config.Unlicense_Path;
             autoUpdatePatchInfoCheckBox.Checked = _config.AutoUpdatePatchInfo;
+            customPatchInfoCheckBox.Checked = _config.CustomPatchInfoEnable;
+            customPatchInfoPathTextBox.Text = _config.CustomPatchInfoPath;
         }
 
         private void ApplySettings()
@@ -53,6 +55,8 @@ namespace SCPSL_ModPatch
             _config.GameFolder_Path = gamePathTextBox.Text;
             _config.Unlicense_Path = unlicenseTextBox.Text;
             _config.AutoUpdatePatchInfo = autoUpdatePatchInfoCheckBox.Checked;
+            _config.CustomPatchInfoEnable = customPatchInfoCheckBox.Checked;
+            _config.CustomPatchInfoPath = customPatchInfoPathTextBox.Text;
 
             SaveConfiguration();
         }
@@ -73,6 +77,20 @@ namespace SCPSL_ModPatch
         private void resetButton_Click(object sender, EventArgs e)
         {
             ResetSettings();
+        }
+
+        private void browseGamePathButton_Click(object sender, EventArgs e)
+        {
+            if (folderBrowserDialog.ShowDialog() == DialogResult.Cancel)
+                return;
+            gamePathTextBox.Text = folderBrowserDialog.SelectedPath;
+        }
+
+        private void browseCustomPatchInfoButton_Click(object sender, EventArgs e)
+        {
+            if (folderBrowserDialog.ShowDialog() == DialogResult.Cancel)
+                return;
+            customPatchInfoPathTextBox.Text = folderBrowserDialog.SelectedPath;
         }
     }
 }

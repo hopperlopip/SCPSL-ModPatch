@@ -19,7 +19,7 @@ namespace SCPSL_ModPatch.PatchUtils
         public string versionTo = string.Empty;
 
         public string cleanLauncherPath = string.Empty;
-        public string? cleanLauncherUrl = string.Empty;
+        public string? cleanLauncherUrl = null;
         public int metadataVersion;
         public MethodsInfo methods = new();
 
@@ -38,7 +38,7 @@ namespace SCPSL_ModPatch.PatchUtils
     public class MethodsInfo
     {
         public PatchMethodInfo[] patchMethods = Array.Empty<PatchMethodInfo>();
-        public GameVersionMethodInfo gameVersionMethod = new();
+        public GameVersionMethodInfo? gameVersionMethod = null;
     }
 
     public class PatchMethodInfo
@@ -46,7 +46,7 @@ namespace SCPSL_ModPatch.PatchUtils
         public string name = string.Empty;
         public int patchOffset; // Relative offset from method start.
         public string patchData = string.Empty; // Hex-coded patch data.
-        public int patchSize; // Size of patching area.
+        public int? patchSize = null; // Size of patching area.
     }
 
     public class GameVersionMethodInfo
