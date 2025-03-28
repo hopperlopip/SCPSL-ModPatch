@@ -225,7 +225,7 @@ namespace SCPSL_ModPatch.PatchUtils
             patchDataSB.Replace("[RET]", "C3");
 
             //FASM
-            MatchCollection matches = Regex.Matches(patchDataSB.ToString(), @"\[FASM:(.*?)\]");
+            MatchCollection matches = Regex.Matches(patchDataSB.ToString(), @"\[FASM:(.*?)!\]");
             bool isFasmExisting = FASM.IsFasmExisting();
             if (!isFasmExisting && matches.Count > 0)
             {
