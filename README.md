@@ -13,7 +13,7 @@ There are a couple archives in the assets section.
 
 ## Creating your own mod-patches:
 In order to create and use your own mod-patches you need to use `patchinfo.json` files.
-What is it? It it special json that contains all patch data that ModPatch needs.<br/>
+What is it? It is special json that contains all patch data that ModPatch needs.<br/>
 The "clean" version of the `patchinfo.json`, named `patchinfo_template.json`, is located [here](Shared_Files/patchinfo_template/patchinfo_template.json) or in the root folder of the ModPatch program.
 
 Here is an example of patching versions from 10.1.0 to 11.1.4:
@@ -70,7 +70,7 @@ Here is an example of patching versions from 10.1.0 to 11.1.4:
     - `typeOffset` is an offset for the version type such as `Release`, `Public Beta`, `Private Beta` etc.
 
 ### PatchData keywords:
-The `patchData` has some keyword you can use in order to simplify your work:
+The `patchData` has some keywords you can use in order to simplify your work:
 - `[NOP]` is a binary equivalent of assembler `nop` instruction.
 - `[RET]` is a binary equivalent of assembler `ret` instruction.
 - `[FASM:{asm code here}]` is a special keyword that can assemble instruction, that is placed instead of `{asm code here}`, to its binary equivalent. [EXPERIMENTAL] May not work as expected.
