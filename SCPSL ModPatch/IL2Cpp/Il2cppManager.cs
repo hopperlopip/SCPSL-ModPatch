@@ -7,6 +7,9 @@ namespace SCPSL_ModPatch.IL2Cpp
     internal class Il2cppManager
     {
         const string IL2CPP_FOLDER = @".\il2cppdumper";
+        public const string IL2CPP_LOAD_ERROR_MESSAGE = "Loading IL2CPP end up failure.\r\n" +
+            "Make sure you selected right version of the game.";
+
         Il2Cpp? _il2Cpp;
         Metadata? _metadata;
         byte[] _gameAssemblyData;
@@ -86,8 +89,7 @@ namespace SCPSL_ModPatch.IL2Cpp
             catch (Exception ex) when (ex is not FileIsProtectedException)
             {
                 _il2Cpp = null;
-                throw new Il2cppInitException("Loading IL2CPP end up failure.\r\n" +
-                    "Make sure you selected right version of the game.");
+                throw new Il2cppInitException(IL2CPP_LOAD_ERROR_MESSAGE);
             }
 
             byte[] finalHash = XxHash128.Hash(gameAssemblyData);

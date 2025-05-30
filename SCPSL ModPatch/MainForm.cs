@@ -139,7 +139,15 @@ namespace SCPSL_ModPatch
             il2cppButton.Text = "Loading IL2CPP...";
 
             // Getting GameAssembly data
-            _gameAssemblyData = await Patcher.GetGameAssemblyDataAsync(GameAssemblyPath);
+            try
+            {
+                _gameAssemblyData = await Patcher.GetGameAssemblyDataAsync(GameAssemblyPath);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                goto IL2CPP_LOAD_END;
+            }
 
             //Loading IL2CPP
             _il2CppManager = new Il2cppManager(_gameAssemblyData);
@@ -222,7 +230,15 @@ namespace SCPSL_ModPatch
                 }
                 return false;
             }
-            await _il2CppManager.DumpIl2cppAsync();
+            try
+            {
+                await _il2CppManager.DumpIl2cppAsync();
+            }
+            catch
+            {
+                MessageBox.Show(Il2cppManager.IL2CPP_LOAD_ERROR_MESSAGE, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
             await _il2CppManager.GetScriptJsonAsync();
             await _il2CppManager.GetMethodsDictionaryAsync();
             _il2CppManager.RemoveDumpFolder();
