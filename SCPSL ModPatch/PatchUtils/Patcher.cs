@@ -31,6 +31,12 @@ namespace SCPSL_ModPatch.PatchUtils
         /// <returns></returns>
         public static byte[] GetGameAssemblyData(string gameAssemblyPath)
         {
+            if (!File.Exists(gameAssemblyPath))
+            {
+                throw new ArgumentException($"Couldn't find GameAssembly.dll. Please type correct path to your game." +
+                    "\r\nIf you typed game folder correctly and your game doesn't have GameAssembly.dll," +
+                    " probably you're using game version that doesn't need the Mod Patch.");
+            }
             byte[] gameAssemblyData = File.ReadAllBytes(gameAssemblyPath);
             return gameAssemblyData;
         }

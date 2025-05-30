@@ -13,13 +13,24 @@ namespace SCPSL_ModPatch.IL2Cpp
     {
         public static void Init(string il2cppPath, string metadataPath, Config config, out Metadata metadata, out Il2Cpp il2Cpp)
         {
-            Console.WriteLine("Initializing metadata...");
             var metadataBytes = File.ReadAllBytes(metadataPath);
+            var il2cppBytes = File.ReadAllBytes(il2cppPath);
+            Init(il2cppBytes, metadataBytes, config, out metadata, out il2Cpp);
+        }
+
+        public static void Init(byte[] il2cppBytes, string metadataPath, Config config, out Metadata metadata, out Il2Cpp il2Cpp)
+        {
+            var metadataBytes = File.ReadAllBytes(metadataPath);
+            Init(il2cppBytes, metadataBytes, config, out metadata, out il2Cpp);
+        }
+
+        public static void Init(byte[] il2cppBytes, byte[] metadataBytes, Config config, out Metadata metadata, out Il2Cpp il2Cpp)
+        {
+            Console.WriteLine("Initializing metadata...");
             metadata = new Metadata(new MemoryStream(metadataBytes));
             Console.WriteLine($"Metadata Version: {metadata.Version}");
 
             Console.WriteLine("Initializing il2cpp file...");
-            var il2cppBytes = File.ReadAllBytes(il2cppPath);
             var il2cppMagic = BitConverter.ToUInt32(il2cppBytes, 0);
             var il2CppMemory = new MemoryStream(il2cppBytes);
             switch (il2cppMagic)

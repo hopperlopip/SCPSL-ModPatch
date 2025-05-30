@@ -1,6 +1,7 @@
 using Newtonsoft.Json;
 using SCPSL_ModPatch.IL2Cpp;
 using SCPSL_ModPatch.PatchUtils;
+using System.Text.Json;
 
 namespace SCPSL_ModPatch
 {
@@ -28,7 +29,7 @@ namespace SCPSL_ModPatch
         string GameAssemblyPath { get => @$"{GamePath}\GameAssembly.dll"; }
         string MetadataPath { get => @$"{GamePath}\SCPSL_Data\il2cpp_data\Metadata\global-metadata.dat"; }
 
-        Il2cppManager _il2CppManager = new();
+        Il2cppManager _il2CppManager = new Il2cppManager(Array.Empty<byte>());
         GameVersion? _gameVersion;
         bool _isGameVersionNotFound = false;
         readonly string _defaultGameVersionString;
@@ -45,6 +46,11 @@ namespace SCPSL_ModPatch
                 return _il2cppLoadedVersionRange;
             }
         }
+
+        public static JsonSerializerOptions JsonOptions { get; } = new()
+        {
+            IncludeFields = true,
+        };
 
         public MainForm()
         {
@@ -132,8 +138,11 @@ namespace SCPSL_ModPatch
             var initButtonText = il2cppButton.Text;
             il2cppButton.Text = "Loading IL2CPP...";
 
+            // Getting GameAssembly data
+            _gameAssemblyData = await Patcher.GetGameAssemblyDataAsync(GameAssemblyPath);
+
             //Loading IL2CPP
-            _il2CppManager = new();
+            _il2CppManager = new Il2cppManager(_gameAssemblyData);
             _il2cppLoadedVersionRange = SelectedVersionRange;
             ChangeVersionTextBoxLines(1, _defaultGameVersionString);
             int metadataVersion = _il2cppLoadedVersionRange.metadataVersion;
@@ -143,9 +152,6 @@ namespace SCPSL_ModPatch
             {
                 goto IL2CPP_LOAD_END;
             }
-
-            // Getting GameAssembly data
-            _gameAssemblyData = await Patcher.GetGameAssemblyDataAsync(GameAssemblyPath);
 
             // Game version getting and displaying
             _isGameVersionNotFound = false;
@@ -200,7 +206,7 @@ namespace SCPSL_ModPatch
         {
             try
             {
-                await _il2CppManager.LoadIl2cppAsync(GameAssemblyPath, MetadataPath, metadataVersion);
+                await _il2CppManager.LoadIl2cppAsync(MetadataPath, metadataVersion);
             }
             catch (Exception ex)
             {
