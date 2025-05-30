@@ -237,6 +237,7 @@ namespace SCPSL_ModPatch
             catch
             {
                 MessageBox.Show(Il2cppManager.IL2CPP_LOAD_ERROR_MESSAGE, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                _il2CppManager.RemoveDumpFolder();
                 return false;
             }
             await _il2CppManager.GetScriptJsonAsync();
