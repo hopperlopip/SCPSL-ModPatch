@@ -324,11 +324,28 @@ namespace SCPSL_ModPatch.PatchUtils
             {
                 PatchMethodInfo patchMethod = patchMethods[i];
                 int functionOffset = GetOffsetFromFuncName(patchMethod.name);
+
+                if (!string.IsNullOrEmpty(patchMethod.patchifnotexists))
+                {
+                    string notExistsFunctionName = patchMethod.patchifnotexists;
+                    int notExistsFunctionOffset = GetOffsetFromFuncName(notExistsFunctionName);
+                    bool doesFunctionNotExist = notExistsFunctionOffset < 0;
+                    if (!doesFunctionNotExist)
+                        continue;
+                }
                 if (functionOffset < 0)
                 {
-                    MessageBox.Show($"Couldn't patch ({patchMethod.name}) function", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    if (!patchMethod.nowarning)
+                    {
+                        string mainText = $"Couldn't patch ({patchMethod.name}) function.";
+                        if (string.IsNullOrEmpty(patchMethod.patchifnotexists))
+                            MessageBox.Show($"{mainText} This function wasn't found.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        else
+                            MessageBox.Show($"{mainText} This function and ({patchMethod.patchifnotexists}) functions weren't found.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
                     continue;
                 }
+
                 try
                 {
                     PatchFunction(functionOffset, patchMethod);

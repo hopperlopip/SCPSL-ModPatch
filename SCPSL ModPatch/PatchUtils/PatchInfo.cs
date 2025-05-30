@@ -47,6 +47,8 @@ namespace SCPSL_ModPatch.PatchUtils
         public int patchOffset; // Relative offset from method start.
         public string patchData = string.Empty; // Hex-coded patch data.
         public int? patchSize = null; // Size of patching area.
+        public bool nowarning = false; // Don't show a warning if the method doesn't exist.
+        public string? patchifnotexists = null; // Patches the method if specified method doesn't exist.
     }
 
     public class GameVersionMethodInfo
