@@ -44,6 +44,7 @@
             folderBrowserDialog = new FolderBrowserDialog();
             openJsonFileDialog = new OpenFileDialog();
             openExeFileDialog = new OpenFileDialog();
+            createManagedFolderCheckBox = new CheckBox();
             GamePathGroupBox.SuspendLayout();
             UnlicenseGroupBox.SuspendLayout();
             CustomPatchInfoGroupBox.SuspendLayout();
@@ -52,7 +53,7 @@
             // applyButton
             // 
             applyButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            applyButton.Location = new Point(12, 224);
+            applyButton.Location = new Point(12, 252);
             applyButton.Margin = new Padding(3, 2, 3, 2);
             applyButton.Name = "applyButton";
             applyButton.Size = new Size(450, 40);
@@ -98,7 +99,7 @@
             // resetButton
             // 
             resetButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            resetButton.Location = new Point(12, 268);
+            resetButton.Location = new Point(12, 296);
             resetButton.Margin = new Padding(3, 2, 3, 2);
             resetButton.Name = "resetButton";
             resetButton.Size = new Size(450, 40);
@@ -157,7 +158,7 @@
             CustomPatchInfoGroupBox.Controls.Add(browseCustomPatchInfoPathButton);
             CustomPatchInfoGroupBox.Controls.Add(customPatchInfoCheckBox);
             CustomPatchInfoGroupBox.Controls.Add(customPatchInfoPathTextBox);
-            CustomPatchInfoGroupBox.Location = new Point(12, 137);
+            CustomPatchInfoGroupBox.Location = new Point(12, 162);
             CustomPatchInfoGroupBox.Name = "CustomPatchInfoGroupBox";
             CustomPatchInfoGroupBox.Size = new Size(450, 75);
             CustomPatchInfoGroupBox.TabIndex = 6;
@@ -201,11 +202,22 @@
             // 
             openExeFileDialog.Filter = "EXE files|*.exe|All files|*.*";
             // 
+            // createManagedFolderCheckBox
+            // 
+            createManagedFolderCheckBox.AutoSize = true;
+            createManagedFolderCheckBox.Location = new Point(12, 137);
+            createManagedFolderCheckBox.Name = "createManagedFolderCheckBox";
+            createManagedFolderCheckBox.Size = new Size(367, 19);
+            createManagedFolderCheckBox.TabIndex = 7;
+            createManagedFolderCheckBox.Text = "Create Managed folder with dummy DLLs during IL2CPP loading";
+            createManagedFolderCheckBox.UseVisualStyleBackColor = true;
+            // 
             // SettingsForm
             // 
             AutoScaleDimensions = new SizeF(96F, 96F);
             AutoScaleMode = AutoScaleMode.Dpi;
-            ClientSize = new Size(474, 319);
+            ClientSize = new Size(474, 347);
+            Controls.Add(createManagedFolderCheckBox);
             Controls.Add(CustomPatchInfoGroupBox);
             Controls.Add(autoUpdatePatchInfoCheckBox);
             Controls.Add(UnlicenseGroupBox);
@@ -246,5 +258,6 @@
         private Button browseUnlicensePathButton;
         private OpenFileDialog openJsonFileDialog;
         private OpenFileDialog openExeFileDialog;
+        private CheckBox createManagedFolderCheckBox;
     }
 }

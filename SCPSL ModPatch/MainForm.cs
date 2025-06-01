@@ -233,6 +233,9 @@ namespace SCPSL_ModPatch
             try
             {
                 await _il2CppManager.DumpIl2cppAsync();
+
+                if (_config.CreateManagedDummyDllFolder)
+                    await _il2CppManager.GenerateDummyDllsAsync(GamePath);
             }
             catch
             {

@@ -158,5 +158,29 @@ namespace SCPSL_ModPatch.IL2Cpp
             scriptGenerator.WriteScript(outputDir);
             Console.WriteLine("Done!");
         }
+
+        public static void GenerateDummyDll(Metadata metadata, Il2Cpp il2Cpp, string outputDir, string dirName = "Managed")
+        {
+            var executor = new Il2CppExecutor(metadata, il2Cpp);
+            Console.WriteLine("Generate dummy dll...");
+            DummyExport(executor, outputDir, true, dirName);
+            Console.WriteLine("Done!");
+        }
+
+        private static void DummyExport(Il2CppExecutor il2CppExecutor, string outputDir, bool addToken, string dirName = "Managed")
+        {
+            string dummyDllDirectory = Path.Combine(outputDir, dirName);
+            if (Directory.Exists(dummyDllDirectory))
+                Directory.Delete(dummyDllDirectory, true);
+            Directory.CreateDirectory(dummyDllDirectory);
+            var dummy = new DummyAssemblyGenerator(il2CppExecutor, addToken);
+            foreach (var assembly in dummy.Assemblies)
+            {
+                using var stream = new MemoryStream();
+                assembly.Write(stream);
+                string dllFilePath = Path.Combine(dummyDllDirectory, assembly.MainModule.Name);
+                File.WriteAllBytes(dllFilePath, stream.ToArray());
+            }
+        }
     }
 }

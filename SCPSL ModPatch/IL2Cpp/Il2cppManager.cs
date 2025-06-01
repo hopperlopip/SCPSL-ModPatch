@@ -169,6 +169,17 @@ namespace SCPSL_ModPatch.IL2Cpp
             await Task.Run(() => GetMethodsDictionary());
         }
 
+        public void GenerateDummyDlls(string gamePath)
+        {
+            string gameDataFolder = Path.Combine(gamePath, "SCPSL_Data");
+            Il2CppDumperWorker.GenerateDummyDll(Metadata, IL2CPP, gameDataFolder, "Managed");
+        }
+
+        public async Task GenerateDummyDllsAsync(string gamePath)
+        {
+            await Task.Run(() => GenerateDummyDlls(gamePath));
+        }
+
         public void RemoveDumpFolder()
         {
             if (Directory.Exists(IL2CPP_FOLDER))

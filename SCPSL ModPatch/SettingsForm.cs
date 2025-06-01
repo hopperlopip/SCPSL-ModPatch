@@ -58,6 +58,9 @@ namespace SCPSL_ModPatch
             // AutoUpdatePatchInfo
             autoUpdatePatchInfoCheckBox.Checked = config.AutoUpdatePatchInfo;
 
+            // CreateManagedDummyDllFolder
+            createManagedFolderCheckBox.Checked = config.CreateManagedDummyDllFolder;
+
             // CustomPatchInfoEnable
             customPatchInfoCheckBox.Checked = config.CustomPatchInfoEnable;
 
@@ -75,6 +78,9 @@ namespace SCPSL_ModPatch
 
             // AutoUpdatePatchInfo
             _config.AutoUpdatePatchInfo = autoUpdatePatchInfoCheckBox.Checked;
+
+            // CreateManagedDummyDllFolder
+            _config.CreateManagedDummyDllFolder = createManagedFolderCheckBox.Checked;
 
             // CustomPatchInfoEnable
             if (_config.CustomPatchInfoEnable != customPatchInfoCheckBox.Checked)
