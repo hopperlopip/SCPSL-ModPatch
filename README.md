@@ -33,7 +33,9 @@ Here is an example of patching versions from 10.1.0 to 11.1.4:
             "name": "CentralAuthManager$$Authentication",
             "patchOffset": 0,
             "patchData": "[RET]",
-            "patchSize": 2
+            "patchSize": 2,
+            "nowarning": false,
+            "patchifnotexists": null
           }
         ],
         "gameVersionMethod": {
@@ -61,6 +63,8 @@ Here is an example of patching versions from 10.1.0 to 11.1.4:
     - `patchOffset` is a relative offset from the method which name you typed above. Default value is `0`.
     - `patchData` is a hexadecimal representation of the replacing data. It has its own [keywords](#patchdata-keywords) in order to simplify the work. Default value is `empty string`.
     - `patchSize` is a size of patch area which will be replaced by the `patchData`, if the size is bigger than `patchData` size, the next bytes will be replaced by `NOP` assember instruction. It is optional field. If this field is `null` then the patchSize will be taken from lenght of `patchData`. Default value is `null`.
+    - `nowarning` is a bool field that defines will warning message box pop up or not if the method doesn't exist. Default value is `false`.
+    - `patchifnotexists` is a string field of a method name, if the field isn't `null` and not `empty string` the patch method will be patched only if the specified method in this field doesn't exist. Default value is `null`.
   - `gameVersionMethod` is an object for information of the Game Version. It is optional field. Default value is `null`.
     - `name` is a name of the GameVersion method. Default value is `"GameCore.Version$$.cctor"`.
     - `autoFindOffsets` is a bool field that enabled auto search for GameVersion. If this field is `true` then all offset fields are ignored. Default value is `false`.
@@ -73,9 +77,12 @@ Here is an example of patching versions from 10.1.0 to 11.1.4:
 The `patchData` has some keywords you can use in order to simplify your work:
 - `[NOP]` is a binary equivalent of assembler `nop` instruction.
 - `[RET]` is a binary equivalent of assembler `ret` instruction.
-- `[FASM:{asm code here}]` is a special keyword that can assemble instruction, that is placed instead of `{asm code here}`, to its binary equivalent. [EXPERIMENTAL] May not work as expected.
+- `[FASM:{asm code here}!]` is a special keyword that can assemble instruction, that is placed instead of `{asm code here}`, to its binary equivalent. [EXPERIMENTAL] May not work as expected.
 
 Also you can use ` `(space) and `-` separators but it is not recommended.
+
+## Discord server
+This project mainly was made for this discord server — https://discord.gg/HVpmehSGBY
 
 ## Used libraries/programs:
 1) [Il2CppDumper](https://github.com/Perfare/Il2CppDumper) for getting IL2CPP info.
