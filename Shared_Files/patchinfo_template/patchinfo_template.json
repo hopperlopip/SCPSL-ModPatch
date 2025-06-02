@@ -13,7 +13,9 @@
             "name": "",
             "patchOffset": 0,
             "patchData": "00",
-            "patchSize": 0
+            "patchSize": 0,
+            "nowarning": false,
+            "patchifnotexists": null
           }
         ],
         "gameVersionMethod": {
