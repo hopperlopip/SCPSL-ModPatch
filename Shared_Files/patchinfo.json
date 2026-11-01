@@ -258,9 +258,9 @@
       }
     },
     {
-      "versionRange": "14.2.8 – Current",
+      "versionRange": "14.2.8",
       "versionFrom": "14.2.8",
-      "versionTo": "Current",
+      "versionTo": "14.2.8",
       "cleanLauncherPath": "./clean_launchers/6000.0.43f1/SCPSL.exe",
       "cleanLauncherUrl": "https://raw.githubusercontent.com/hopperlopip/SCPSL-ModPatch/refs/heads/master/Shared_Files/clean_launchers/6000.0.43f1/SCPSL.exe",
       "metadataVersion": 31,
@@ -281,6 +281,56 @@
           {
             "name": "SimpleMenu.<StartLoad>d__8$$MoveNext",
             "patchOffset": 561,
+            "patchData": "B801000000",
+            "patchSize": 13
+          },
+          {
+            "name": "CentralAuth.CentralAuthManager$$Authentication",
+            "patchOffset": 0,
+            "patchData": "[RET]",
+            "patchSize": 3
+          },
+          {
+            "name": "CentralServer$$Init",
+            "patchOffset": 0,
+            "patchData": "[RET]",
+            "patchSize": 5
+          }
+        ],
+        "gameVersionMethod": {
+          "name": "GameCore.Version$$.cctor",
+          "autoFindOffsets": true,
+          "majorOffset": 152,
+          "minorOffset": 170,
+          "revisionOffset": 188,
+          "typeOffset": 224
+        }
+      }
+    },
+    {
+      "versionRange": "14.2.9 – Current",
+      "versionFrom": "14.2.9",
+      "versionTo": "Current",
+      "cleanLauncherPath": "./clean_launchers/6000.0.43f1/SCPSL.exe",
+      "cleanLauncherUrl": "https://raw.githubusercontent.com/hopperlopip/SCPSL-ModPatch/refs/heads/master/Shared_Files/clean_launchers/6000.0.43f1/SCPSL.exe",
+      "metadataVersion": 31,
+      "methods": {
+        "patchMethods": [
+          {
+            "name": "LauncherCommunicator$$.cctor",
+            "patchOffset": 0,
+            "patchData": "[RET]",
+            "patchSize": 2
+          },
+          {
+            "name": "SimpleMenu.<StartLoad>d__8$$MoveNext",
+            "patchOffset": 439,
+            "patchData": "[NOP]",
+            "patchSize": 9
+          },
+          {
+            "name": "SimpleMenu.<StartLoad>d__8$$MoveNext",
+            "patchOffset": 566,
             "patchData": "B801000000",
             "patchSize": 13
           },
